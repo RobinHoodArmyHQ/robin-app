@@ -14,12 +14,9 @@
 
   "mounts": [
     { "source": "gradle-cache", "target": "/root/.gradle", "type": "volume" },
-    {
-      "source": "android-sdk-cache",
-      "target": "/root/.android_sdk",
-      "type": "volume"
-    }
+    { "source": "android-sdk-cache", "target": "/root/.android_sdk", "type": "volume" }
   ],
+
   // "initializeCommand": "bash .devcontainer/initializeCommand.sh",
   // "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
 
