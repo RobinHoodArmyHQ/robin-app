@@ -35,9 +35,9 @@ require('dotenv').config({
 
 const BUNDLE_ID = 'com.rha.app'; // ios bundle id
 const PACKAGE = 'com.rha.app'; // android package name
-const NAME = 'rha-app'; // app name
-const EXPO_ACCOUNT_OWNER = 'expo-owner'; // expo account owner
-const EAS_PROJECT_ID = 'c3e1075b-6fe7-4686-aa49-35b46a229044'; // eas project id
+const NAME = 'robin-app'; // app name
+const EXPO_ACCOUNT_OWNER = 'gunjan2307'; // expo account owner
+const EAS_PROJECT_ID = '34ff95fa-1ab6-4ded-893d-9aa1c35c7102'; // eas project id
 const SCHEME = 'rha'; // app scheme
 
 /**
@@ -81,6 +81,7 @@ const client = z.object({
   API_URL: z.string(),
   VAR_NUMBER: z.number(),
   VAR_BOOL: z.boolean(),
+  GOOGLE_MAPS_API_KEY: z.string(),
 });
 
 const buildTime = z.object({
@@ -105,6 +106,7 @@ const _clientEnv = {
   API_URL: process.env.API_URL,
   VAR_NUMBER: Number(process.env.VAR_NUMBER),
   VAR_BOOL: process.env.VAR_BOOL === 'true',
+  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
 };
 
 /**

@@ -1,5 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { Env } from '@env';
+import { Link } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 
 import { Item } from '@/components/settings/item';
@@ -65,6 +66,12 @@ export default function Settings() {
               icon={<Website color={iconColor} />}
               onPress={() => {}}
             />
+          </ItemsContainer>
+
+          <ItemsContainer title="settings.development">
+            <Link href="/event/create">
+              <Item text="settings.create_event" />
+            </Link>
           </ItemsContainer>
 
           <View className="my-8">
