@@ -49,7 +49,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-font',
       {
-        fonts: ['./assets/fonts/Inter.ttf'],
+        fonts: [
+          'node_modules/@expo-google-fonts/poppins/Poppins_400Regular_Italic.ttf',
+          'node_modules/@expo-google-fonts/poppins/Poppins_600SemiBold.ttf',
+          'node_modules/@expo-google-fonts/pt-sans/PTSans_400Regular.ttf',
+        ],
       },
     ],
     'expo-localization',

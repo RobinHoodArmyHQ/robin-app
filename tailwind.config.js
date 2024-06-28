@@ -9,7 +9,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        inter: ['Inter'],
+        poppins: ['Poppins_400Regular'],
+        poppinsSemibold: ['Poppins_600SemiBold'],
+        ptsans: ['PTSans_400Regular'],
       },
       colors,
     },
