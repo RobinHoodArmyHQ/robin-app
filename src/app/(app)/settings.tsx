@@ -1,7 +1,7 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { Env } from '@env';
 import { Link } from 'expo-router';
 import { useColorScheme } from 'nativewind';
+import React from 'react';
 
 import { Item } from '@/components/settings/item';
 import { ItemsContainer } from '@/components/settings/items-container';
@@ -71,6 +71,12 @@ export default function Settings() {
           <ItemsContainer title="settings.development">
             <Link href="/event/create">
               <Item text="settings.create_event" />
+            </Link>
+            <Link href="/event/6a0cf46b-3e88-4a2d-8889-4833cde544ee">
+              <Item text="settings.event_details" />
+            </Link>
+            <Link href="/auth/login">
+              <Item text="settings.login" />
             </Link>
           </ItemsContainer>
 
