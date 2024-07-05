@@ -1,17 +1,18 @@
 /* eslint-disable max-lines-per-function */
-import { Link, Stack } from 'expo-router';
+import { Link, router, Stack } from 'expo-router';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Button, Colors, Text, TextField, View } from 'react-native-ui-lib';
 
 import IconEmail from '@/../assets/icons/email.svg';
 import FacebookLogo from '@/../assets/icons/facebook_logo.svg';
 import GoogleLogo from '@/../assets/icons/google_logo.svg';
 import IconPassword from '@/../assets/icons/password.svg';
+import IconProfile from '@/../assets/icons/profile.svg';
 import ArrowRight from '@/../assets/icons/right-arrow.svg';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 
-export default function LoginScreen() {
+export default function SignupScreen() {
   return (
     <>
       <Stack.Screen
@@ -24,7 +25,10 @@ export default function LoginScreen() {
 
       <HeaderWithLogo />
 
-      <View style={{ marginHorizontal: 24, alignItems: 'center' }}>
+      <ScrollView
+        style={{ paddingHorizontal: 24 }}
+        contentContainerStyle={{ alignItems: 'center' }}
+      >
         <Text
           style={{
             fontSize: 28,
@@ -33,9 +37,45 @@ export default function LoginScreen() {
             marginBottom: 24,
           }}
         >
-          Login
+          Sign Up
         </Text>
 
+        <View row>
+          <TextField
+            style={styles.formInput}
+            containerStyle={styles.fontFieldContainer}
+            fieldStyle={styles.formField}
+            floatingPlaceholderStyle={styles.formPlaceholder}
+            validationMessageStyle={styles.formFieldValidationMessage}
+            placeholder={'First Name'}
+            enableErrors
+            floatingPlaceholder
+            placeholderTextColor={Colors.grey_1}
+            validate={['required']}
+            validationMessage={['First name is required']}
+            validateOnBlur
+            // keyboardType="email-address"
+            // autoCapitalize="none"
+            leadingAccessory={<IconProfile />}
+          />
+          <TextField
+            style={styles.formInput}
+            containerStyle={styles.fontFieldContainer}
+            fieldStyle={styles.formField}
+            floatingPlaceholderStyle={styles.formPlaceholder}
+            validationMessageStyle={styles.formFieldValidationMessage}
+            placeholder={'Last Name'}
+            enableErrors
+            floatingPlaceholder
+            placeholderTextColor={Colors.grey_1}
+            validate={['required']}
+            validationMessage={['Last name is required']}
+            validateOnBlur
+            // keyboardType="email-address"
+            // autoCapitalize="none"
+            leadingAccessory={<IconProfile />}
+          />
+        </View>
         <TextField
           style={styles.formInput}
           containerStyle={styles.fontFieldContainer}
@@ -54,7 +94,6 @@ export default function LoginScreen() {
           autoCapitalize="none"
           leadingAccessory={<IconEmail />}
         />
-
         <TextField
           style={styles.formInput}
           containerStyle={styles.fontFieldContainer}
@@ -71,16 +110,25 @@ export default function LoginScreen() {
           leadingAccessory={<IconPassword />}
           secureTextEntry
         />
-
-        <Link
-          href="/auth/reset-password"
-          style={{ alignSelf: 'flex-end', paddingVertical: 4 }}
-        >
-          Forgot Password?
-        </Link>
+        <TextField
+          style={styles.formInput}
+          containerStyle={styles.fontFieldContainer}
+          fieldStyle={styles.formField}
+          floatingPlaceholderStyle={styles.formPlaceholder}
+          validationMessageStyle={styles.formFieldValidationMessage}
+          placeholder={'Confirm Password'}
+          enableErrors
+          floatingPlaceholder
+          validate={['required', (value: string) => value.length > 6]}
+          validationMessage={['Password is required', 'Password is too short']}
+          validateOnBlur
+          validateOnChange
+          leadingAccessory={<IconPassword />}
+          secureTextEntry
+        />
 
         <Button
-          label="Login"
+          label="Sign Up"
           iconOnRight
           iconSource={ArrowRightIcon}
           iconStyle={{}}
@@ -94,6 +142,9 @@ export default function LoginScreen() {
           borderRadius={8}
           marginT-24
           style={{ height: 56, alignSelf: 'stretch' }}
+          onPress={() => {
+            router.push('/auth/verification');
+          }}
         />
 
         <Text marginV-24 style={{ color: Colors.grey_2 }}>
@@ -119,20 +170,17 @@ export default function LoginScreen() {
           borderRadius={12}
         />
 
-        <Text marginT-24>
-          Don't have an account?{' '}
-          <Link
-            href="/auth/signup"
-            style={{
-              color: Colors.rhaGreen,
-              fontFamily: 'poppinsSemiBold',
-              fontWeight: 'bold',
-            }}
-          >
-            Sign up
-          </Link>
+        <Text
+          marginV-48
+          style={{
+            color: Colors.rhaBlack,
+            textAlign: 'center',
+            marginBottom: 48,
+          }}
+        >
+          Already have an account? <Link href="/auth/login">Login</Link>
         </Text>
-      </View>
+      </ScrollView>
     </>
   );
 }
@@ -152,7 +200,7 @@ function FacebookLogoIcon() {
 const styles = StyleSheet.create({
   fontFieldContainer: {
     alignSelf: 'stretch',
-    justifyContent: 'center',
+    flexGrow: 1,
   },
   formField: {
     borderBottomWidth: 1,
