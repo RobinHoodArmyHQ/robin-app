@@ -17,7 +17,7 @@ export default function SignupScreen() {
     <>
       <Stack.Screen
         options={{
-          title: 'Login',
+          title: 'Sign Up',
           presentation: 'fullScreenModal',
           headerShown: false,
         }}
