@@ -4,11 +4,7 @@ import React, { useCallback, useEffect } from 'react';
 
 import { useAuth, useIsFirstTime } from '@/core';
 import { Pressable, Text } from '@/ui';
-import {
-  Feed as FeedIcon,
-  Settings as SettingsIcon,
-  Style as StyleIcon,
-} from '@/ui/icons';
+import { Feed as FeedIcon, Settings as SettingsIcon } from '@/ui/icons';
 
 export default function TabLayout() {
   const status = useAuth.use.status();
@@ -28,7 +24,7 @@ export default function TabLayout() {
     return <Redirect href="/onboarding" />;
   }
   if (status === 'signOut') {
-    return <Redirect href="/login" />;
+    return <Redirect href="/auth/login" />;
   }
   return (
     <Tabs>
@@ -42,15 +38,6 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="style"
-        options={{
-          title: 'Style',
-          headerShown: false,
-          tabBarIcon: ({ color }) => <StyleIcon color={color} />,
-          tabBarTestID: 'style-tab',
-        }}
-      />
       <Tabs.Screen
         name="settings"
         options={{

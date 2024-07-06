@@ -67,6 +67,7 @@ export default function Onboarding() {
               marginTop: 32,
               marginBottom: 24,
               lineHeight: 42,
+              textAlign: 'center',
             }}
           >
             Welcome to Robin Hood Army!

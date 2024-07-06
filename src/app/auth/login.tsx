@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Colors, Text, TextField, View } from 'react-native-ui-lib';
@@ -10,8 +10,12 @@ import GoogleLogo from '@/../assets/icons/google_logo.svg';
 import IconPassword from '@/../assets/icons/password.svg';
 import ArrowRight from '@/../assets/icons/right-arrow.svg';
 import { HeaderWithLogo } from '@/components/header-with-logo';
+import { useAuth } from '@/core';
 
 export default function LoginScreen() {
+  const router = useRouter();
+  const signIn = useAuth.use.signIn();
+
   return (
     <>
       <Stack.Screen
@@ -94,6 +98,10 @@ export default function LoginScreen() {
           borderRadius={8}
           marginT-24
           style={{ height: 56, alignSelf: 'stretch' }}
+          onPress={() => {
+            signIn({ access: 'access-token', refresh: 'refresh-token' });
+            router.push('/');
+          }}
         />
 
         <Text marginV-24 style={{ color: Colors.grey_2 }}>

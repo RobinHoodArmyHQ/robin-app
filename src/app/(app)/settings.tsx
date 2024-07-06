@@ -1,6 +1,5 @@
 import { Env } from '@env';
 import { Link } from 'expo-router';
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import { Item } from '@/components/settings/item';
@@ -8,23 +7,19 @@ import { ItemsContainer } from '@/components/settings/items-container';
 import { LanguageItem } from '@/components/settings/language-item';
 import { ThemeItem } from '@/components/settings/theme-item';
 import { translate, useAuth } from '@/core';
-import { colors, FocusAwareStatusBar, ScrollView, Text, View } from '@/ui';
-import { Github, Rate, Share, Support, Website } from '@/ui/icons';
+import { ScrollView, Text, View } from '@/ui';
 
 export default function Settings() {
   const signOut = useAuth.use.signOut();
-  const { colorScheme } = useColorScheme();
-  const iconColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+
   return (
     <>
-      <FocusAwareStatusBar />
-
       <ScrollView>
         <View className="flex-1 px-4 pt-16 ">
           <Text className="text-xl font-bold">
             {translate('settings.title')}
           </Text>
+
           <ItemsContainer title="settings.generale">
             <LanguageItem />
             <ThemeItem />
@@ -35,48 +30,18 @@ export default function Settings() {
             <Item text="settings.version" value={Env.VERSION} />
           </ItemsContainer>
 
-          <ItemsContainer title="settings.support_us">
-            <Item
-              text="settings.share"
-              icon={<Share color={iconColor} />}
-              onPress={() => {}}
-            />
-            <Item
-              text="settings.rate"
-              icon={<Rate color={iconColor} />}
-              onPress={() => {}}
-            />
-            <Item
-              text="settings.support"
-              icon={<Support color={iconColor} />}
-              onPress={() => {}}
-            />
-          </ItemsContainer>
-
-          <ItemsContainer title="settings.links">
-            <Item text="settings.privacy" onPress={() => {}} />
-            <Item text="settings.terms" onPress={() => {}} />
-            <Item
-              text="settings.github"
-              icon={<Github color={iconColor} />}
-              onPress={() => {}}
-            />
-            <Item
-              text="settings.website"
-              icon={<Website color={iconColor} />}
-              onPress={() => {}}
-            />
-          </ItemsContainer>
-
           <ItemsContainer title="settings.development">
+            <Link href="/auth/login">
+              <Item text="settings.login" />
+            </Link>
+            <Link href="/onboarding">
+              <Item text="settings.onboarding" />
+            </Link>
             <Link href="/event/create">
               <Item text="settings.create_event" />
             </Link>
             <Link href="/event/6a0cf46b-3e88-4a2d-8889-4833cde544ee">
               <Item text="settings.event_details" />
-            </Link>
-            <Link href="/auth/login">
-              <Item text="settings.login" />
             </Link>
           </ItemsContainer>
 
