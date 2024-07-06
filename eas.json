@@ -66,6 +66,10 @@
         "key": "eas-1"
       }
     },
+    "preview": {
+      "developmentClient": false,
+      "distribution": "internal"
+    },
     "simulator": {
       "ios": {
         "simulator": true,

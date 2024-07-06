@@ -35,7 +35,7 @@ require('dotenv').config({
 
 const BUNDLE_ID = 'com.rha.app'; // ios bundle id
 const PACKAGE = 'com.rha.app'; // android package name
-const NAME = 'robin-app'; // app name
+const NAME = 'Robins'; // app name
 const EXPO_ACCOUNT_OWNER = 'gunjan2307'; // expo account owner
 const EAS_PROJECT_ID = '34ff95fa-1ab6-4ded-893d-9aa1c35c7102'; // eas project id
 const SCHEME = 'rha'; // app scheme
