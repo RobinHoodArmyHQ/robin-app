@@ -15,6 +15,7 @@ export default function ResetPasswordScreen() {
     <>
       <Stack.Screen
         options={{
+          title: '',
           headerTransparent: true,
           headerStyle: {
             backgroundColor: 'transparent',

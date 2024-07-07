@@ -27,6 +27,7 @@ export default function VerificationScreen() {
     <>
       <Stack.Screen
         options={{
+          title: '',
           headerTransparent: true,
           headerStyle: {
             backgroundColor: 'transparent',
