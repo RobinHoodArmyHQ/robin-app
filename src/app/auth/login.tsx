@@ -1,14 +1,13 @@
-/* eslint-disable max-lines-per-function */
 import { Link, Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Button, Colors, Text, TextField, View } from 'react-native-ui-lib';
+import { Button, Colors, Text, View } from 'react-native-ui-lib';
 
-import IconEmail from '@/../assets/icons/email.svg';
 import FacebookLogo from '@/../assets/icons/facebook_logo.svg';
 import GoogleLogo from '@/../assets/icons/google_logo.svg';
-import IconPassword from '@/../assets/icons/password.svg';
 import ArrowRight from '@/../assets/icons/right-arrow.svg';
+import EmailInput from '@/components/form/email-input';
+import PasswordInput from '@/components/form/password-input';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 import { useAuth } from '@/core';
 
@@ -40,41 +39,8 @@ export default function LoginScreen() {
           Login
         </Text>
 
-        <TextField
-          style={styles.formInput}
-          containerStyle={styles.fontFieldContainer}
-          fieldStyle={styles.formField}
-          floatingPlaceholderStyle={styles.formPlaceholder}
-          validationMessageStyle={styles.formFieldValidationMessage}
-          placeholder={'Email'}
-          enableErrors
-          floatingPlaceholder
-          placeholderTextColor={Colors.grey_1}
-          validate={['required', 'email']}
-          validationMessage={['Email is required', 'Email is invalid']}
-          validateOnBlur
-          // validateOnChange
-          keyboardType="email-address"
-          autoCapitalize="none"
-          leadingAccessory={<IconEmail />}
-        />
-
-        <TextField
-          style={styles.formInput}
-          containerStyle={styles.fontFieldContainer}
-          fieldStyle={styles.formField}
-          floatingPlaceholderStyle={styles.formPlaceholder}
-          validationMessageStyle={styles.formFieldValidationMessage}
-          placeholder={'Password'}
-          enableErrors
-          floatingPlaceholder
-          validate={['required', (value: string) => value.length > 6]}
-          validationMessage={['Password is required', 'Password is too short']}
-          validateOnBlur
-          validateOnChange
-          leadingAccessory={<IconPassword />}
-          secureTextEntry
-        />
+        <EmailInput />
+        <PasswordInput />
 
         <Link
           href="/auth/reset-password"
@@ -158,27 +124,6 @@ function FacebookLogoIcon() {
 }
 
 const styles = StyleSheet.create({
-  fontFieldContainer: {
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-  },
-  formField: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.grey_1,
-    height: 32,
-  },
-  formInput: {
-    fontSize: 14,
-    paddingLeft: 8,
-  },
-  formPlaceholder: {
-    paddingLeft: 8,
-    fontSize: 14,
-    lineHeight: 32,
-  },
-  formFieldValidationMessage: {
-    paddingTop: 4,
-  },
   socialButton: {
     alignSelf: 'stretch',
     elevation: 4,

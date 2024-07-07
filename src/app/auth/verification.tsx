@@ -109,27 +109,6 @@ export default function VerificationScreen() {
 }
 
 const styles = StyleSheet.create({
-  formFieldContainer: {
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-  },
-  formField: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.grey_1,
-    height: 32,
-  },
-  formInput: {
-    fontSize: 14,
-    paddingLeft: 8,
-  },
-  formPlaceholder: {
-    paddingLeft: 8,
-    fontSize: 14,
-    lineHeight: 32,
-  },
-  formFieldValidationMessage: {
-    paddingTop: 4,
-  },
   codeFieldRoot: {
     marginTop: 20,
     width: 280,

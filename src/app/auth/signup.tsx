@@ -2,14 +2,14 @@
 import { Link, router, Stack } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Button, Colors, Text, TextField, View } from 'react-native-ui-lib';
+import { Button, Colors, Text, View } from 'react-native-ui-lib';
 
-import IconEmail from '@/../assets/icons/email.svg';
 import FacebookLogo from '@/../assets/icons/facebook_logo.svg';
 import GoogleLogo from '@/../assets/icons/google_logo.svg';
-import IconPassword from '@/../assets/icons/password.svg';
-import IconProfile from '@/../assets/icons/profile.svg';
 import ArrowRight from '@/../assets/icons/right-arrow.svg';
+import EmailInput from '@/components/form/email-input';
+import NameInput from '@/components/form/name-input';
+import PasswordInput from '@/components/form/password-input';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 
 export default function SignupScreen() {
@@ -41,91 +41,20 @@ export default function SignupScreen() {
         </Text>
 
         <View row>
-          <TextField
-            style={styles.formInput}
-            containerStyle={styles.fontFieldContainer}
-            fieldStyle={styles.formField}
-            floatingPlaceholderStyle={styles.formPlaceholder}
-            validationMessageStyle={styles.formFieldValidationMessage}
+          <NameInput
             placeholder={'First Name'}
-            enableErrors
-            floatingPlaceholder
-            placeholderTextColor={Colors.grey_1}
             validate={['required']}
             validationMessage={['First name is required']}
-            validateOnBlur
-            // keyboardType="email-address"
-            // autoCapitalize="none"
-            leadingAccessory={<IconProfile />}
           />
-          <TextField
-            style={styles.formInput}
-            containerStyle={styles.fontFieldContainer}
-            fieldStyle={styles.formField}
-            floatingPlaceholderStyle={styles.formPlaceholder}
-            validationMessageStyle={styles.formFieldValidationMessage}
+          <NameInput
             placeholder={'Last Name'}
-            enableErrors
-            floatingPlaceholder
-            placeholderTextColor={Colors.grey_1}
             validate={['required']}
             validationMessage={['Last name is required']}
-            validateOnBlur
-            // keyboardType="email-address"
-            // autoCapitalize="none"
-            leadingAccessory={<IconProfile />}
           />
         </View>
-        <TextField
-          style={styles.formInput}
-          containerStyle={styles.fontFieldContainer}
-          fieldStyle={styles.formField}
-          floatingPlaceholderStyle={styles.formPlaceholder}
-          validationMessageStyle={styles.formFieldValidationMessage}
-          placeholder={'Email'}
-          enableErrors
-          floatingPlaceholder
-          placeholderTextColor={Colors.grey_1}
-          validate={['required', 'email']}
-          validationMessage={['Email is required', 'Email is invalid']}
-          validateOnBlur
-          // validateOnChange
-          keyboardType="email-address"
-          autoCapitalize="none"
-          leadingAccessory={<IconEmail />}
-        />
-        <TextField
-          style={styles.formInput}
-          containerStyle={styles.fontFieldContainer}
-          fieldStyle={styles.formField}
-          floatingPlaceholderStyle={styles.formPlaceholder}
-          validationMessageStyle={styles.formFieldValidationMessage}
-          placeholder={'Password'}
-          enableErrors
-          floatingPlaceholder
-          validate={['required', (value: string) => value.length > 6]}
-          validationMessage={['Password is required', 'Password is too short']}
-          validateOnBlur
-          validateOnChange
-          leadingAccessory={<IconPassword />}
-          secureTextEntry
-        />
-        <TextField
-          style={styles.formInput}
-          containerStyle={styles.fontFieldContainer}
-          fieldStyle={styles.formField}
-          floatingPlaceholderStyle={styles.formPlaceholder}
-          validationMessageStyle={styles.formFieldValidationMessage}
-          placeholder={'Confirm Password'}
-          enableErrors
-          floatingPlaceholder
-          validate={['required', (value: string) => value.length > 6]}
-          validationMessage={['Password is required', 'Password is too short']}
-          validateOnBlur
-          validateOnChange
-          leadingAccessory={<IconPassword />}
-          secureTextEntry
-        />
+        <EmailInput />
+        <PasswordInput />
+        <PasswordInput placeholder="Confirm Password" />
 
         <Button
           label="Sign Up"
@@ -198,27 +127,6 @@ function FacebookLogoIcon() {
 }
 
 const styles = StyleSheet.create({
-  fontFieldContainer: {
-    alignSelf: 'stretch',
-    flexGrow: 1,
-  },
-  formField: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.grey_1,
-    height: 32,
-  },
-  formInput: {
-    fontSize: 14,
-    paddingLeft: 8,
-  },
-  formPlaceholder: {
-    paddingLeft: 8,
-    fontSize: 14,
-    lineHeight: 32,
-  },
-  formFieldValidationMessage: {
-    paddingTop: 4,
-  },
   socialButton: {
     alignSelf: 'stretch',
     elevation: 4,
