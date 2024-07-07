@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       fontFamily: {
         poppins: ['Poppins_400Regular'],
-        poppinsSemibold: ['Poppins_600SemiBold'],
+        poppinsSemiBold: ['Poppins_600SemiBold'],
         ptsans: ['PTSans_400Regular'],
       },
       colors,

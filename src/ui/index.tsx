@@ -1,5 +1,6 @@
 import { cssInterop } from 'nativewind';
 import Svg from 'react-native-svg';
+import { Colors } from 'react-native-ui-lib';
 
 export * from './button';
 export * from './checkbox';
@@ -30,3 +31,14 @@ cssInterop(Svg, {
     target: 'style',
   },
 });
+
+Colors.loadColors({
+  rhaGreen: '#165F30',
+  rhaBlack: '#120D26',
+  grey_1: '#E5E5E5',
+  grey_2: '#9D9898',
+});
+
+// Assets.loadAssetsGroup('icons', {
+//   chevronRight: require('../../assets/icons/right-arrow.svg'),
+// });

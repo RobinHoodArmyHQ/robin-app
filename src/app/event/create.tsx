@@ -78,7 +78,7 @@ export default function Create() {
     createEvent(
       { ...formData },
       {
-        onSuccess: (response) => {
+        onSuccess: (response: any) => {
           showMessage({
             message: response.status.message,
             type: 'success',

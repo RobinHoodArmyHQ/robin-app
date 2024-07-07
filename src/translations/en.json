@@ -9,18 +9,12 @@
     "create_event": "Create Event",
     "development": "Development",
     "english": "English",
+    "event_details": "Event Details",
     "generale": "General",
-    "github": "Github",
     "language": "Language",
-    "links": "Links",
+    "login": "Login",
     "logout": "Logout",
-    "more": "More",
-    "privacy": "Privacy Policy",
-    "rate": "Rate",
-    "share": "Share",
-    "support": "Support",
-    "support_us": "Support Us",
-    "terms": "Terms of Service",
+    "onboarding": "Onboarding",
     "theme": {
       "dark": "Dark",
       "light": "Light",
@@ -28,8 +22,6 @@
       "title": "Theme"
     },
     "title": "Settings",
-    "version": "Version",
-    "website": "Website"
-  },
-  "welcome": "Welcome to obytes app site"
+    "version": "Version"
+  }
 }
