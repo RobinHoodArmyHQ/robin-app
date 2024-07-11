@@ -9,11 +9,14 @@ export const styles = StyleSheet.create({
   formField: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.grey_1,
-    height: 32,
+    minHeight: 32,
   },
   formInput: {
     fontSize: 14,
+    lineHeight: 24,
     paddingLeft: 8,
+    textAlignVertical: 'top',
+    paddingTop: 6,
   },
   formPlaceholder: {
     paddingLeft: 8,

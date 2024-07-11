@@ -9,7 +9,7 @@ type PropTypes = {
   placeholder?: string | undefined;
 };
 
-const PasswordInput = ({ placeholder = 'Password' }: PropTypes) => {
+export const PasswordInput = ({ placeholder = 'Password' }: PropTypes) => {
   return (
     <TextField
       style={styles.formInput}
@@ -29,5 +29,3 @@ const PasswordInput = ({ placeholder = 'Password' }: PropTypes) => {
     />
   );
 };
-
-export default PasswordInput;

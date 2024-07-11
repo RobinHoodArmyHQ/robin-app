@@ -17,7 +17,7 @@ type PropTypes = {
   validateOnChange?: boolean;
 };
 
-const NameInput = ({
+export const NameInput = ({
   placeholder = 'Name',
   validate,
   validationMessage,
@@ -41,5 +41,3 @@ const NameInput = ({
     />
   );
 };
-
-export default NameInput;

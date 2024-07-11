@@ -6,8 +6,7 @@ import { Button, Colors, Text, View } from 'react-native-ui-lib';
 import FacebookLogo from '@/../assets/icons/facebook_logo.svg';
 import GoogleLogo from '@/../assets/icons/google_logo.svg';
 import ArrowRight from '@/../assets/icons/right-arrow.svg';
-import EmailInput from '@/components/form/email-input';
-import PasswordInput from '@/components/form/password-input';
+import RHA from '@/components';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 import { useAuth } from '@/core';
 
@@ -28,19 +27,10 @@ export default function LoginScreen() {
       <HeaderWithLogo />
 
       <View style={{ marginHorizontal: 24, alignItems: 'center' }}>
-        <Text
-          style={{
-            fontSize: 28,
-            color: Colors.rhaGreen,
-            marginTop: 32,
-            marginBottom: 24,
-          }}
-        >
-          Login
-        </Text>
+        <RHA.Type.H1>Login</RHA.Type.H1>
 
-        <EmailInput />
-        <PasswordInput />
+        <RHA.Form.EmailInput />
+        <RHA.Form.PasswordInput />
 
         <Link
           href="/auth/reset-password"

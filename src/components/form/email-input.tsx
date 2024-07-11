@@ -12,7 +12,7 @@ type PropTypes = {
   validateOnChange?: boolean;
 };
 
-const EmailInput = ({
+export const EmailInput = ({
   placeholder = 'Email',
   onChangeValidity,
   onChangeText,
@@ -41,5 +41,3 @@ const EmailInput = ({
     />
   );
 };
-
-export default EmailInput;
