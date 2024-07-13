@@ -37,7 +37,7 @@ export const NameInput = ({
       validationMessage={validationMessage}
       validateOnBlur
       autoCapitalize="words"
-      leadingAccessory={<IconProfile />}
+      leadingAccessory={<IconProfile stroke={Colors.grey_2} />}
     />
   );
 };

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button, Colors, Text, View } from 'react-native-ui-lib';
 
 import ArrowRight from '@/../assets/icons/right-arrow.svg';
-import EmailInput from '@/components/form/email-input';
+import { EmailInput } from '@/components/form/email-input';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 
 export default function ResetPasswordScreen() {
@@ -77,5 +77,5 @@ export default function ResetPasswordScreen() {
 }
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} />;
+  return <ArrowRight width={8} translateY={1} fill={Colors.white} />;
 }

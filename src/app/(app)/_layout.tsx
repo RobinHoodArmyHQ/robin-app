@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Link, Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
+import { Colors, Text } from 'react-native-ui-lib';
 
+import RHA from '@/components';
 import { useAuth, useIsFirstTime } from '@/core';
-import { Pressable, Text } from '@/ui';
-import { Feed as FeedIcon, Settings as SettingsIcon } from '@/ui/icons';
+import { Settings as SettingsIcon } from '@/ui/icons';
 
 export default function TabLayout() {
   const status = useAuth.use.status();
@@ -12,6 +13,7 @@ export default function TabLayout() {
   const hideSplash = useCallback(async () => {
     await SplashScreen.hideAsync();
   }, []);
+
   useEffect(() => {
     if (status !== 'idle') {
       setTimeout(() => {
@@ -26,15 +28,42 @@ export default function TabLayout() {
   if (status === 'signOut') {
     return <Redirect href="/auth/login" />;
   }
+
   return (
     <Tabs>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Feed',
-          tabBarIcon: ({ color }) => <FeedIcon color={color} />,
+          title: 'Home',
+          tabBarIcon: ({ color }) => <RHA.Icons.TabsHome fill={color} />,
           headerRight: () => <CreateNewPostLink />,
-          tabBarTestID: 'feed-tab',
+          tabBarTestID: 'home-tab',
+          headerStyle: { backgroundColor: Colors.rhaGreen },
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="leaderboard"
+        options={{
+          title: 'Leaderboard',
+          tabBarIcon: ({ color }) => (
+            <RHA.Icons.TabsLeaderboard fill={color} stroke={color} />
+          ),
+          headerRight: () => <CreateNewPostLink />,
+          tabBarTestID: 'leaderboard-tab',
+          headerStyle: { backgroundColor: Colors.rhaGreen },
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <RHA.Icons.TabsProfile fill={color} />,
+          headerRight: () => <CreateNewPostLink />,
+          tabBarTestID: 'profile-tab',
+          headerStyle: { backgroundColor: Colors.rhaGreen },
+          headerShown: false,
         }}
       />
 
@@ -53,10 +82,8 @@ export default function TabLayout() {
 
 const CreateNewPostLink = () => {
   return (
-    <Link href="/feed/add-post" asChild>
-      <Pressable>
-        <Text className="px-3 text-primary-300">Create</Text>
-      </Pressable>
+    <Link href="/event/create" asChild>
+      <Text style={{ color: Colors.white, paddingRight: 20 }}>Create</Text>
     </Link>
   );
 };

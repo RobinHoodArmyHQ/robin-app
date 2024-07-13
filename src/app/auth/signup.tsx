@@ -7,9 +7,9 @@ import { Button, Colors, Text, View } from 'react-native-ui-lib';
 import FacebookLogo from '@/../assets/icons/facebook_logo.svg';
 import GoogleLogo from '@/../assets/icons/google_logo.svg';
 import ArrowRight from '@/../assets/icons/right-arrow.svg';
-import EmailInput from '@/components/form/email-input';
-import NameInput from '@/components/form/name-input';
-import PasswordInput from '@/components/form/password-input';
+import { EmailInput } from '@/components/form/email-input';
+import { NameInput } from '@/components/form/name-input';
+import { PasswordInput } from '@/components/form/password-input';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 
 export default function SignupScreen() {
@@ -107,7 +107,13 @@ export default function SignupScreen() {
             marginBottom: 48,
           }}
         >
-          Already have an account? <Link href="/auth/login">Login</Link>
+          Already have an account?{' '}
+          <Link
+            href="/auth/login"
+            style={{ fontWeight: 900, color: Colors.rhaGreen }}
+          >
+            Login
+          </Link>
         </Text>
       </ScrollView>
     </>
@@ -115,7 +121,7 @@ export default function SignupScreen() {
 }
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} />;
+  return <ArrowRight width={8} translateY={1} fill={Colors.white} />;
 }
 
 function GoogleLogoIcon() {

@@ -13,12 +13,6 @@ import {
   Wizard,
 } from 'react-native-ui-lib';
 
-import CalendarIcon from '@/../assets/icons/calendar.svg';
-import DownArrow from '@/../assets/icons/down-arrow.svg';
-import EventIcon from '@/../assets/icons/event-name.svg';
-import EventTypeIcon from '@/../assets/icons/event-type.svg';
-import LocationIcon from '@/../assets/icons/location-pin.svg';
-import TimeIcon from '@/../assets/icons/time.svg';
 import RHA from '@/components';
 import type { Option } from '@/ui';
 import { ArrowRight } from '@/ui/icons';
@@ -97,8 +91,10 @@ export default function Create() {
           items={event_type_options}
           useDialog
           style={{ fontSize: 14, paddingLeft: 8 }}
-          trailingAccessory={<DownArrow />}
-          leadingAccessory={<EventTypeIcon height={18} />}
+          trailingAccessory={<RHA.Icons.DownArrow fill={Colors.grey_2} />}
+          leadingAccessory={
+            <RHA.Icons.EventType fill={Colors.grey_2} height={18} />
+          }
           floatingPlaceholder
           floatingPlaceholderStyle={{
             paddingLeft: 6,
@@ -124,7 +120,9 @@ export default function Create() {
           placeholder="Event Title"
           value={state.formData.title}
           ref={eventTitleInputRef}
-          leadingAccessory={<EventIcon height={18} />}
+          leadingAccessory={
+            <RHA.Icons.EventName fill={Colors.grey_2} height={16} />
+          }
           validate={['required']}
           validationMessage={['Event Title is required']}
           onChangeText={(text) => {
@@ -138,7 +136,8 @@ export default function Create() {
         <RHA.Form.Input
           placeholder="Event Details"
           leadingAccessory={
-            <EventIcon
+            <RHA.Icons.EventName
+              fill={Colors.grey_2}
               height={18}
               style={{ alignSelf: 'flex-start', marginTop: 6 }}
             />
@@ -203,7 +202,9 @@ export default function Create() {
           }}
           mode={'date'}
           enableErrors
-          leadingAccessory={<CalendarIcon width={20} />}
+          leadingAccessory={
+            <RHA.Icons.Calendar fill={Colors.grey_2} width={20} />
+          }
         />
         <DateTimePicker
           placeholder={'Start Time'}
@@ -241,7 +242,7 @@ export default function Create() {
           validationMessage={''}
           validateOnChange
           enableErrors
-          leadingAccessory={<TimeIcon width={20} />}
+          leadingAccessory={<RHA.Icons.Clock fill={Colors.grey_2} width={20} />}
         />
 
         <TouchableOpacity onPress={() => router.navigate('/location-picker')}>
@@ -253,7 +254,9 @@ export default function Create() {
                 ? `${state.formData.event_location.latitude}, ${state.formData.event_location.longitude}`
                 : ''
             }
-            leadingAccessory={<LocationIcon width={20} />}
+            leadingAccessory={
+              <RHA.Icons.LocationPin fill={Colors.grey_2} width={20} />
+            }
             validate={['required']}
             validationMessage={''}
             validateOnChange

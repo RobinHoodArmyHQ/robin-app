@@ -35,7 +35,7 @@ export const EmailInput = ({
       validateOnChange={validateOnChange}
       keyboardType="email-address"
       autoCapitalize="none"
-      leadingAccessory={<IconEmail />}
+      leadingAccessory={<IconEmail stroke={Colors.grey_2} />}
       onChangeValidity={onChangeValidity}
       onChangeText={onChangeText}
     />

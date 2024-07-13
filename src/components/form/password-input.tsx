@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField } from 'react-native-ui-lib';
+import { Colors, TextField } from 'react-native-ui-lib';
 
 import IconPassword from '@/../assets/icons/password.svg';
 
@@ -24,7 +24,7 @@ export const PasswordInput = ({ placeholder = 'Password' }: PropTypes) => {
       validationMessage={['Password is required', 'Password is too short']}
       validateOnBlur
       validateOnChange
-      leadingAccessory={<IconPassword />}
+      leadingAccessory={<IconPassword stroke={Colors.grey_2} />}
       secureTextEntry
     />
   );
