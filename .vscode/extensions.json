@@ -10,7 +10,6 @@
     "formulahendry.auto-rename-tag",
     "bradlc.vscode-tailwindcss",
     "lokalise.i18n-ally",
-    "github.copilot",
-    "ChakrounAnas.turbo-console-log"
+    "github.copilot"
   ]
 }

@@ -65,6 +65,9 @@ importers:
       expo-image:
         specifier: ~1.12.12
         version: 1.12.12(expo@51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7)))
+      expo-image-picker:
+        specifier: ~15.0.7
+        version: 15.0.7(expo@51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7)))
       expo-linking:
         specifier: ~6.3.1
         version: 6.3.1(expo@51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7)))
@@ -3809,6 +3812,16 @@ packages:
 
   expo-font@12.0.7:
     resolution: {integrity: sha512-rbSdpjtT/A3M+u9xchR9tdD+5VGSxptUis7ngX5zfAVp3O5atOcPNSA82Jeo15HkrQE+w/upfFBOvi56lsGdsQ==}
+    peerDependencies:
+      expo: '*'
+
+  expo-image-loader@4.7.0:
+    resolution: {integrity: sha512-cx+MxxsAMGl9AiWnQUzrkJMJH4eNOGlu7XkLGnAXSJrRoIiciGaKqzeaD326IyCTV+Z1fXvIliSgNW+DscvD8g==}
+    peerDependencies:
+      expo: '*'
+
+  expo-image-picker@15.0.7:
+    resolution: {integrity: sha512-u8qiPZNfDb+ap6PJ8pq2iTO7JKX+ikAUQ0K0c7gXGliKLxoXgDdDmXxz9/6QdICTshJBJlBvI0MwY5NWu7A/uw==}
     peerDependencies:
       expo: '*'
 
@@ -9000,7 +9013,7 @@ snapshots:
       '@types/node': 20.5.1
       chalk: 4.1.2
       cosmiconfig: 8.3.6(typescript@5.5.3)
-      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.5.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.5.3))(typescript@5.5.3)
+      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.5.3))(ts-node@10.9.2(@types/node@20.14.9)(typescript@5.5.3))(typescript@5.5.3)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -11872,7 +11885,7 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
-  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.5.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.5.3))(typescript@5.5.3):
+  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.5.3))(ts-node@10.9.2(@types/node@20.14.9)(typescript@5.5.3))(typescript@5.5.3):
     dependencies:
       '@types/node': 20.5.1
       cosmiconfig: 8.3.6(typescript@5.5.3)
@@ -12735,6 +12748,15 @@ snapshots:
     dependencies:
       expo: 51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7))
       fontfaceobserver: 2.3.0
+
+  expo-image-loader@4.7.0(expo@51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7))):
+    dependencies:
+      expo: 51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7))
+
+  expo-image-picker@15.0.7(expo@51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7))):
+    dependencies:
+      expo: 51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7))
+      expo-image-loader: 4.7.0(expo@51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7)))
 
   expo-image@1.12.12(expo@51.0.18(@babel/core@7.24.7)(@babel/preset-env@7.24.5(@babel/core@7.24.7))):
     dependencies:

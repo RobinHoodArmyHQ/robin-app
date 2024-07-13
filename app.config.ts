@@ -16,7 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   splash: {
     image: './assets/splash.png',
     resizeMode: 'cover',
-    backgroundColor: '#2E3C4B',
+    backgroundColor: '#165F30',
   },
   updates: {
     fallbackToCacheTimeout: 0,
@@ -37,7 +37,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#2E3C4B',
+      backgroundColor: '#165F30',
     },
     package: Env.PACKAGE,
   },
@@ -82,6 +82,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             color: 'white',
           },
         ],
+      },
+    ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission:
+          'Allow $(PRODUCT_NAME) to access your photos. The app accesses your photos to let you share them with other Robins.',
       },
     ],
   ],

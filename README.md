@@ -47,3 +47,9 @@ pnpm android
 - [Forms](https://starter.obytes.com/ui-and-theme/Forms)
 - [Data fetching](https://starter.obytes.com/guides/data-fetching)
 - [Contribute to starter](https://starter.obytes.com/how-to-contribute/)
+
+#### Changing SVG Colors
+
+This project follows [this guide](https://medium.com/@HassanYousefi/how-to-use-svg-with-dynamic-colors-in-react-native-171a94e8a8e2) to dynamically modify SVG Icon colors
+
+Icons can be passed props mentioned in `.svgrrc` file.
