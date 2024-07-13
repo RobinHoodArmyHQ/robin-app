@@ -102,7 +102,7 @@ export default function LoginScreen() {
 }
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} />;
+  return <ArrowRight width={8} translateY={1} fill={Colors.white} />;
 }
 
 function GoogleLogoIcon() {

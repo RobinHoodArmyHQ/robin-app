@@ -43,6 +43,9 @@ export default function Settings() {
             <Link href="/event/6a0cf46b-3e88-4a2d-8889-4833cde544ee">
               <Item text="settings.event_details" />
             </Link>
+            <Link href="/event/checkin">
+              <Item text="settings.checkin" />
+            </Link>
           </ItemsContainer>
 
           <View className="my-8">
