@@ -3,13 +3,12 @@ import { Colors } from 'react-native-ui-lib';
 
 export const styles = StyleSheet.create({
   formFieldContainer: {
-    alignSelf: 'stretch',
     flexGrow: 1,
   },
   formField: {
+    minHeight: 32,
     borderBottomWidth: 1,
     borderBottomColor: Colors.grey_1,
-    minHeight: 32,
   },
   formInput: {
     fontSize: 14,

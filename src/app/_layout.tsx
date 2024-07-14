@@ -1,7 +1,7 @@
 import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
-import { Stack, useNavigationContainerRef } from 'expo-router';
+import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -18,10 +18,6 @@ import '../../global.css';
 
 import React from 'react';
 
-export const unstable_settings = {
-  initialRouteName: '(app)',
-};
-
 Colors.loadColors({
   rhaGreen: '#165F30',
   rhaBlack: '#120D26',
@@ -30,10 +26,15 @@ Colors.loadColors({
   grey_3: '#443E3E',
 });
 
+export const unstable_settings = {
+  initialRouteName: '(app)',
+};
+
 hydrateAuth();
 loadSelectedTheme();
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-// SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const navigationRef = useNavigationContainerRef();

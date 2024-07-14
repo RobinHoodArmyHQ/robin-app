@@ -119,7 +119,10 @@ export default function Feed() {
 
       <RHA.Type.H1
         marginH-20
-        style={{ fontFamily: 'Poppins_600SemiBold', letterSpacing: -0.7 }}
+        style={{
+          fontFamily: 'Poppins_600SemiBold',
+          letterSpacing: -0.7,
+        }}
       >
         Welcome Robin!
       </RHA.Type.H1>

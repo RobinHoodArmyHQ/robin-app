@@ -6,6 +6,7 @@ import FacebookLogo from '@/../assets/icons/facebook_logo.svg';
 import GoogleLogo from '@/../assets/icons/google_logo.svg';
 import LocationPin from '@/../assets/icons/location-pin.svg';
 import RightArrow from '@/../assets/icons/right-arrow.svg';
+import Share from '@/../assets/icons/share.svg';
 import TabsHome from '@/../assets/icons/tabs-home.svg';
 import TabsLeaderboard from '@/../assets/icons/tabs-leaderboard.svg';
 import TabsProfile from '@/../assets/icons/tabs-profile.svg';
@@ -44,6 +45,7 @@ const RHA = {
     EventName,
     EventType,
     Clock,
+    Share,
   },
 };
 
