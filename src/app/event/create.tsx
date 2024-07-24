@@ -8,26 +8,72 @@ import {
   Colors,
   DateTimePicker,
   Picker,
-  Text,
   View,
   Wizard,
 } from 'react-native-ui-lib';
 
 import RHA from '@/components';
+import { EventDetails } from '@/components/event-details';
 import type { Option } from '@/ui';
-import { ArrowRight } from '@/ui/icons';
 
 export default function Create() {
   // const { mutate: createEvent, isPending } = useCreateEvent();
-  const { event_location } = useLocalSearchParams();
+
+  const { event_location_param } = useLocalSearchParams();
+  useEffect(() => {
+    if (typeof event_location_param === 'string') {
+      const location = JSON.parse(event_location_param);
+      if (location === null) {
+        return;
+      }
+
+      const { latitude, longitude, name } = location;
+      // const [latitude, longitude] = event_location_param
+      //   .toString()
+      //   .split(',')
+      //   .map(Number);
+
+      if (latitude && longitude) {
+        setState((prevState) => ({
+          ...prevState,
+          formData: {
+            ...prevState.formData,
+            event_location: {
+              latitude: latitude,
+              longitude: longitude,
+              name: name,
+            },
+          },
+        }));
+      }
+    }
+  }, [event_location_param]);
+
   const event_type_options: Option[] = [
     { value: 'MEAL_DRIVE', label: 'Meal Drive' },
     { value: 'ACADEMY', label: 'Academy' },
   ];
 
   let eventTitleInputRef = React.createRef<TextFieldRef>();
+  let eventDescriptionInputRef = React.createRef<TextFieldRef>();
 
-  const initialState = {
+  const initialState: {
+    activeIndex: number;
+    completedStepIndex: number;
+    lastStepIndex: number;
+    formData: {
+      title: string;
+      description: string;
+      event_type: string;
+      event_location: {
+        latitude: number;
+        longitude: number;
+        name?: string;
+      };
+      eventDate?: Date;
+      eventStartTime?: Date;
+    };
+  } = {
     activeIndex: 0,
     completedStepIndex: 0,
     lastStepIndex: 2,
@@ -41,6 +87,7 @@ export default function Create() {
       },
     },
   };
+
   const [state, setState] = useState(initialState);
 
   const onActiveIndexChanged = (activeIndex: number) => {
@@ -68,8 +115,22 @@ export default function Create() {
       case 1:
         return renderMoreDetailsForm();
       case 2:
-        return <Text>TODO</Text>;
+        return renderPreview();
     }
+  };
+
+  const renderPreview = () => {
+    return (
+      <>
+        <EventDetails
+          title={state.formData.title}
+          description={state.formData.description}
+          eventDate={state.formData.eventDate}
+          eventStartTime={state.formData.eventStartTime}
+          eventLocation={state.formData.event_location}
+        />
+      </>
+    );
   };
 
   const renderBasicDetailsForm = () => {
@@ -91,7 +152,7 @@ export default function Create() {
           items={event_type_options}
           useDialog
           style={{ fontSize: 14, paddingLeft: 8 }}
-          trailingAccessory={<RHA.Icons.DownArrow fill={Colors.grey_2} />}
+          trailingAccessory={<RHA.Icons.ArrowDown stroke={Colors.grey_2} />}
           leadingAccessory={
             <RHA.Icons.EventType fill={Colors.grey_2} height={18} />
           }
@@ -134,7 +195,8 @@ export default function Create() {
         />
 
         <RHA.Form.Input
-          placeholder="Event Details"
+          placeholder="Event Description"
+          ref={eventDescriptionInputRef}
           leadingAccessory={
             <RHA.Icons.EventName
               fill={Colors.grey_2}
@@ -144,38 +206,34 @@ export default function Create() {
           }
           multiline
           numberOfLines={8}
-        />
-
-        {/* <Input
-          label="Title"
-          onChangeText={(text) =>
-            setState({ ...state, formData: { ...state.formData, title: text } })
-          }
-        />
-
-        <Input
-          label="Description"
-          multiline
-          onChangeText={(text) =>
+          autoCapitalize="sentences"
+          value={state.formData.description}
+          validate={['required', (text: string) => text.length > 100]}
+          validationMessage={[
+            'Event Description is required',
+            'Description is too short',
+          ]}
+          onChangeText={(text) => {
             setState({
               ...state,
               formData: { ...state.formData, description: text },
-            })
-          }
+            });
+          }}
         />
-
-        
-        <Button
-          className="mt-10"
-          label="Create Event"
-          loading={isPending}
-          onPress={onSubmit}
-        /> */}
       </>
     );
   };
 
   const renderMoreDetailsForm = () => {
+    let eventLocationInputValue = state.formData.event_location.name;
+    if (
+      !eventLocationInputValue &&
+      (state.formData.event_location.latitude !== 0 ||
+        state.formData.event_location.longitude !== 0)
+    ) {
+      eventLocationInputValue = `${state.formData.event_location.latitude}, ${state.formData.event_location.longitude}`;
+    }
+
     return (
       <>
         <DateTimePicker
@@ -205,6 +263,13 @@ export default function Create() {
           leadingAccessory={
             <RHA.Icons.Calendar fill={Colors.grey_2} width={20} />
           }
+          value={state.formData.eventDate}
+          onChange={(date: Date) => {
+            setState((prevState) => ({
+              ...prevState,
+              formData: { ...prevState.formData, eventDate: date },
+            }));
+          }}
         />
         <DateTimePicker
           placeholder={'Start Time'}
@@ -243,15 +308,26 @@ export default function Create() {
           validateOnChange
           enableErrors
           leadingAccessory={<RHA.Icons.Clock fill={Colors.grey_2} width={20} />}
+          value={state.formData.eventStartTime}
+          onChange={(date: Date) => {
+            setState((prevState) => ({
+              ...prevState,
+              formData: { ...prevState.formData, eventStartTime: date },
+            }));
+          }}
         />
 
         <TouchableOpacity onPress={() => router.navigate('/location-picker')}>
           <RHA.Form.Input
             placeholder="Event Location"
             value={
-              state.formData.event_location.latitude !== 0 ||
-              state.formData.event_location.longitude !== 0
-                ? `${state.formData.event_location.latitude}, ${state.formData.event_location.longitude}`
+              state.formData.event_location.name
+                ? state.formData.event_location.name
+                : state.formData.event_location.latitude !== 0 ||
+                  state.formData.event_location.longitude !== 0
+                ? `${state.formData.event_location.latitude.toPrecision(
+                    8
+                  )}, ${state.formData.event_location.longitude.toPrecision(8)}`
                 : ''
             }
             leadingAccessory={
@@ -262,6 +338,16 @@ export default function Create() {
             validateOnChange
             editable={false}
             multiline={true}
+            showClearButton
+            onClear={() => {
+              setState((prevState) => ({
+                ...prevState,
+                formData: {
+                  ...prevState.formData,
+                  event_location: { latitude: 0, longitude: 0 },
+                },
+              }));
+            }}
           />
         </TouchableOpacity>
       </>
@@ -277,26 +363,6 @@ export default function Create() {
   // const [formData, setFormData] = useState(initialData);
 
   // update location field in formData whenever location changes
-  useEffect(() => {
-    if (event_location) {
-      const [latitude, longitude] = event_location
-        .toString()
-        .split(',')
-        .map(Number);
-      if (latitude && longitude) {
-        setState((prevState) => ({
-          ...prevState,
-          formData: {
-            ...prevState.formData,
-            event_location: {
-              latitude,
-              longitude,
-            },
-          },
-        }));
-      }
-    }
-  }, [event_location]);
 
   // const onSubmit = () => {
   //   // console.log(formData);
@@ -338,7 +404,7 @@ export default function Create() {
             height: 60,
           }}
           activeConfig={{
-            state: 'enabled',
+            state: 'disabled',
             circleColor: Colors.rhaGreen,
             labelStyle: { color: Colors.rhaGreen },
             indexLabelStyle: { color: Colors.rhaGreen },
@@ -353,69 +419,76 @@ export default function Create() {
           {renderCurrentStep()}
         </ScrollView>
 
-        <View row style={{}}>
-          <Button
-            margin-24
-            label="Previous"
-            iconOnRight
-            iconSource={ArrowRightIcon}
-            iconStyle={{}}
-            labelStyle={{
-              marginRight: 16,
-              fontFamily: 'poppinsSemiBold',
-              fontWeight: 'bold',
-            }}
-            backgroundColor={Colors.grey_2}
-            // size={Button.sizes.large}
-            borderRadius={8}
-            marginT-24
-            style={{ height: 56, alignSelf: 'stretch', flexGrow: 1 }}
-            onPress={() => {
-              setState({
-                ...state,
-                activeIndex: state.activeIndex > 0 ? state.activeIndex - 1 : 0,
-                completedStepIndex:
-                  state.completedStepIndex > 0
-                    ? state.completedStepIndex - 1
-                    : 0,
-              });
-            }}
-          />
-
-          <Button
-            margin-24
-            label="Next"
-            iconOnRight
-            iconSource={ArrowRightIcon}
-            iconStyle={{}}
-            labelStyle={{
-              marginRight: 16,
-              fontFamily: 'poppinsSemiBold',
-              fontWeight: 'bold',
-            }}
-            backgroundColor={Colors.rhaGreen}
-            // size={Button.sizes.large}
-            borderRadius={8}
-            style={{ height: 56, alignSelf: 'stretch', flexGrow: 1 }}
-            onPress={() => {
-              const isValid = eventTitleInputRef.current?.validate?.();
-              console.log(isValid);
-
-              setState({
-                ...state,
-                activeIndex:
-                  state.activeIndex < state.lastStepIndex
-                    ? state.activeIndex + 1
-                    : state.lastStepIndex,
-                completedStepIndex:
-                  state.completedStepIndex < state.lastStepIndex
-                    ? state.completedStepIndex + 1
-                    : state.lastStepIndex,
-              });
-            }}
-          />
-
-          {/* <RHA.Form.PrimaryButton label="Next" /> */}
+        <View
+          row
+          style={{
+            justifyContent: 'space-between',
+            margin: 20,
+          }}
+        >
+          <View style={{ flex: 1, marginRight: 10 }}>
+            <Button
+              label="Previous"
+              iconSource={ArrowLeftIcon}
+              labelStyle={{
+                marginHorizontal: 16,
+                fontFamily: 'Poppins_600SemiBold',
+              }}
+              backgroundColor={Colors.grey_2}
+              borderRadius={8}
+              style={{ height: 56 }}
+              disabled={state.activeIndex === 0}
+              onPress={() => {
+                setState({
+                  ...state,
+                  activeIndex:
+                    state.activeIndex > 0 ? state.activeIndex - 1 : 0,
+                  completedStepIndex:
+                    state.completedStepIndex > 0
+                      ? state.completedStepIndex - 1
+                      : 0,
+                });
+              }}
+            />
+          </View>
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <Button
+              label="Next"
+              iconOnRight
+              iconSource={ArrowRightIcon}
+              labelStyle={{
+                marginHorizontal: 16,
+                fontFamily: 'Poppins_600SemiBold',
+              }}
+              backgroundColor={Colors.rhaGreen}
+              borderRadius={8}
+              style={{ height: 56 }}
+              onPress={() => {
+                const isTitleValid = eventTitleInputRef.current?.validate?.();
+                const isDescriptionValid =
+                  eventDescriptionInputRef.current?.validate();
+                if (isTitleValid === false || isDescriptionValid === false) {
+                  console.log(
+                    'title or description is invalid: ',
+                    isTitleValid,
+                    isDescriptionValid
+                  );
+                  return;
+                }
+                setState({
+                  ...state,
+                  activeIndex:
+                    state.activeIndex < state.lastStepIndex
+                      ? state.activeIndex + 1
+                      : state.lastStepIndex,
+                  completedStepIndex:
+                    state.completedStepIndex < state.lastStepIndex
+                      ? state.completedStepIndex + 1
+                      : state.lastStepIndex,
+                });
+              }}
+            />
+          </View>
         </View>
       </View>
     </>
@@ -423,5 +496,9 @@ export default function Create() {
 }
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} />;
+  return <RHA.Icons.ArrowRight height={14} stroke={Colors.white} />;
+}
+
+function ArrowLeftIcon() {
+  return <RHA.Icons.ArrowLeft height={14} stroke={Colors.white} />;
 }
