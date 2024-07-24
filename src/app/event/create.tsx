@@ -1,61 +1,78 @@
 /* eslint-disable max-lines-per-function */
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
-import type { TextFieldRef } from 'react-native-ui-lib';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, ScrollView, TouchableOpacity } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
+import type { PickerItemProps, TextFieldRef } from 'react-native-ui-lib';
 import {
   Button,
   Colors,
   DateTimePicker,
+  Incubator,
+  LoaderScreen,
   Picker,
   View,
   Wizard,
 } from 'react-native-ui-lib';
 
+import { useCreateEvent } from '@/api/events';
 import RHA from '@/components';
 import { EventDetails } from '@/components/event-details';
-import type { Option } from '@/ui';
+
+const event_type_options: PickerItemProps[] = [
+  { value: 'MEAL_DRIVE', label: 'Meal Drive' },
+  { value: 'ACADEMY', label: 'Academy' },
+];
 
 export default function Create() {
-  // const { mutate: createEvent, isPending } = useCreateEvent();
+  const [toast, setToast] = useState<{
+    visible: boolean;
+    message: string;
+    type: Incubator.ToastPresets | 'success' | 'failure';
+  }>({
+    visible: false,
+    message: '',
+    type: 'failure',
+  });
 
+  // update location data in state when received as URL param (e.g. passed by location-picker)
   const { event_location_param } = useLocalSearchParams();
   useEffect(() => {
     if (typeof event_location_param === 'string') {
       const location = JSON.parse(event_location_param);
       if (location === null) {
+        console.log(
+          'WARN: Ignoring invalid location data received in param: ' +
+            event_location_param
+        );
         return;
       }
 
-      const { latitude, longitude, name } = location;
-      // const [latitude, longitude] = event_location_param
-      //   .toString()
-      //   .split(',')
-      //   .map(Number);
-
-      if (latitude && longitude) {
-        setState((prevState) => ({
-          ...prevState,
-          formData: {
-            ...prevState.formData,
-            event_location: {
-              latitude: latitude,
-              longitude: longitude,
-              name: name,
-            },
+      setState((prevState) => ({
+        ...prevState,
+        formData: {
+          ...prevState.formData,
+          event_location: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            name: location.name,
           },
-        }));
-      }
+        },
+      }));
     }
   }, [event_location_param]);
 
-  const event_type_options: Option[] = [
-    { value: 'MEAL_DRIVE', label: 'Meal Drive' },
-    { value: 'ACADEMY', label: 'Academy' },
-  ];
+  const {
+    mutate: createEvent,
+    isPending: isEventRequestPending,
+    //    error: errorCreateEvent,
+  } = useCreateEvent();
 
-  let eventTitleInputRef = React.createRef<TextFieldRef>();
-  let eventDescriptionInputRef = React.createRef<TextFieldRef>();
+  let eventTitleInputRef = useRef<TextFieldRef>(null);
+  let eventDescriptionInputRef = useRef<TextFieldRef>(null);
+  let eventDateInputRef = useRef<TextFieldRef>(null);
+  let eventStartTimeInputRef = useRef<TextFieldRef>(null);
+  let eventLocationInputRef = useRef<TextFieldRef>(null);
 
   const initialState: {
     activeIndex: number;
@@ -238,7 +255,8 @@ export default function Create() {
       <>
         <DateTimePicker
           placeholder={'Date of Event'}
-          minimumDate={new Date(2024, 0, 1)}
+          ref={eventDateInputRef}
+          minimumDate={new Date()}
           floatingPlaceholder
           floatingPlaceholderStyle={{
             paddingLeft: 8,
@@ -260,6 +278,9 @@ export default function Create() {
           }}
           mode={'date'}
           enableErrors
+          validate={['required']}
+          validationMessage={['Date is required']}
+          validateOnChange
           leadingAccessory={
             <RHA.Icons.Calendar fill={Colors.grey_2} width={20} />
           }
@@ -273,6 +294,7 @@ export default function Create() {
         />
         <DateTimePicker
           placeholder={'Start Time'}
+          ref={eventStartTimeInputRef}
           is24Hour={false}
           dateTimeFormatter={(date) =>
             date
@@ -304,7 +326,7 @@ export default function Create() {
           }}
           mode={'time'}
           validate={['required']}
-          validationMessage={''}
+          validationMessage={['Time is required']}
           validateOnChange
           enableErrors
           leadingAccessory={<RHA.Icons.Clock fill={Colors.grey_2} width={20} />}
@@ -320,6 +342,7 @@ export default function Create() {
         <TouchableOpacity onPress={() => router.navigate('/location-picker')}>
           <RHA.Form.Input
             placeholder="Event Location"
+            ref={eventLocationInputRef}
             value={
               state.formData.event_location.name
                 ? state.formData.event_location.name
@@ -334,7 +357,7 @@ export default function Create() {
               <RHA.Icons.LocationPin fill={Colors.grey_2} width={20} />
             }
             validate={['required']}
-            validationMessage={''}
+            validationMessage={['Location is required']}
             validateOnChange
             editable={false}
             multiline={true}
@@ -354,35 +377,79 @@ export default function Create() {
     );
   };
 
-  // const initialData: CreateEventRequest = {
-  //   title: '',
-  //   description: '',
-  //   event_type: event_type_options[0].value.toString(),
-  //   event_location: null,
-  // };
-  // const [formData, setFormData] = useState(initialData);
+  const onNext = () => {
+    const isTitleValid = eventTitleInputRef.current?.validate?.();
+    const isDescriptionValid = eventDescriptionInputRef.current?.validate();
+    const isDateValid = eventDateInputRef.current?.validate();
+    const isStartTimeValid = eventStartTimeInputRef.current?.validate();
+    const isLocationValid = eventLocationInputRef.current?.validate();
+    if (
+      isTitleValid === false ||
+      isDescriptionValid === false ||
+      isDateValid === false ||
+      isStartTimeValid === false ||
+      isLocationValid === false
+    ) {
+      console.log(
+        'validation failed: ',
+        isTitleValid,
+        isDescriptionValid,
+        isDateValid,
+        isStartTimeValid,
+        isLocationValid
+      );
+      return;
+    }
+    setState({
+      ...state,
+      activeIndex:
+        state.activeIndex < state.lastStepIndex
+          ? state.activeIndex + 1
+          : state.lastStepIndex,
+      completedStepIndex:
+        state.completedStepIndex < state.lastStepIndex
+          ? state.completedStepIndex + 1
+          : state.lastStepIndex,
+    });
 
-  // update location field in formData whenever location changes
+    if (state.activeIndex === state.lastStepIndex) {
+      Alert.alert(
+        'Confirmation',
+        'Event details cannot be modified after creation.\n\nAre you sure you want to create this Event?',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: onSubmit },
+        ]
+      );
+    }
+  };
 
-  // const onSubmit = () => {
-  //   // console.log(formData);
-  //   createEvent(
-  //     { ...state.formData },
-  //     {
-  //       onSuccess: (response: any) => {
-  //         showMessage({
-  //           message: response.status.message,
-  //           type: 'success',
-  //         });
-  //         // here you can navigate to the post list and refresh the list data
-  //         //queryClient.invalidateQueries(usePosts.getKey());
-  //       },
-  //       onError: () => {
-  //         showErrorMessage('Error creating event');
-  //       },
-  //     }
-  //   );
-  // };
+  const onSubmit = () => {
+    // console.log(formData);
+    createEvent(
+      { ...state.formData },
+      {
+        onSuccess: (response: any) => {
+          // TODO
+          showMessage({
+            message: response.status.message,
+            type: 'success',
+          });
+        },
+        onError: (err) => {
+          setToast({
+            visible: true,
+            message: 'Error creating event' + (err?.message || ''),
+            type: 'failure',
+          });
+        },
+      }
+    );
+  };
 
   return (
     <>
@@ -392,9 +459,35 @@ export default function Create() {
         }}
       />
 
-      <View className="flex-1  ">
+      <Incubator.Toast
+        visible={toast.visible}
+        message={toast.message}
+        position={'top'}
+        preset={toast.type}
+        backgroundColor={Colors.red70}
+        action={{
+          label: 'Dismiss',
+          onPress: () => {
+            setToast({ ...toast, visible: false });
+          },
+        }}
+        onDismiss={() => {
+          setToast({ ...toast, visible: false });
+        }}
+      />
+
+      {isEventRequestPending && (
+        <LoaderScreen
+          overlay
+          backgroundColor={Colors.rgba(Colors.grey_3, 0.9)}
+          message={'Creating Event...'}
+          messageStyle={{ color: Colors.white }}
+          loaderColor={Colors.white}
+        />
+      )}
+
+      <View flex>
         <Wizard
-          testID={'uilib.wizard'}
           activeIndex={state.activeIndex}
           onActiveIndexChanged={onActiveIndexChanged}
           containerStyle={{
@@ -415,7 +508,7 @@ export default function Create() {
           <Wizard.Step state={getStepState(2)} label={'Preview'} />
         </Wizard>
 
-        <ScrollView style={{ marginTop: 36, paddingHorizontal: 24 }}>
+        <ScrollView style={{ marginTop: 36, paddingHorizontal: 20 }}>
           {renderCurrentStep()}
         </ScrollView>
 
@@ -452,41 +545,13 @@ export default function Create() {
             />
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
-            <Button
-              label="Next"
+            <RHA.Form.Button
+              label={
+                state.activeIndex < state.lastStepIndex ? 'Next' : 'Publish'
+              }
               iconOnRight
               iconSource={ArrowRightIcon}
-              labelStyle={{
-                marginHorizontal: 16,
-                fontFamily: 'Poppins_600SemiBold',
-              }}
-              backgroundColor={Colors.rhaGreen}
-              borderRadius={8}
-              style={{ height: 56 }}
-              onPress={() => {
-                const isTitleValid = eventTitleInputRef.current?.validate?.();
-                const isDescriptionValid =
-                  eventDescriptionInputRef.current?.validate();
-                if (isTitleValid === false || isDescriptionValid === false) {
-                  console.log(
-                    'title or description is invalid: ',
-                    isTitleValid,
-                    isDescriptionValid
-                  );
-                  return;
-                }
-                setState({
-                  ...state,
-                  activeIndex:
-                    state.activeIndex < state.lastStepIndex
-                      ? state.activeIndex + 1
-                      : state.lastStepIndex,
-                  completedStepIndex:
-                    state.completedStepIndex < state.lastStepIndex
-                      ? state.completedStepIndex + 1
-                      : state.lastStepIndex,
-                });
-              }}
+              onPress={onNext}
             />
           </View>
         </View>

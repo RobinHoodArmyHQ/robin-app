@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+import _ from 'lodash';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import openMap from 'react-native-open-maps';
@@ -74,8 +76,11 @@ export const EventDetails = ({
           <TouchableOpacity
             onPress={() => {
               openMap({
-                latitude: eventLocation?.latitude,
-                longitude: eventLocation?.longitude,
+                // latitude: eventLocation?.latitude,
+                // longitude: eventLocation?.longitude,
+                query: !_.isEmpty(eventLocation?.name)
+                  ? eventLocation?.name
+                  : `${eventLocation?.latitude},${eventLocation?.longitude}`,
               });
             }}
           >

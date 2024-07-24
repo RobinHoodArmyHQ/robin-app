@@ -48,7 +48,7 @@ export const Button = ({
 
 const styles = StyleSheet.create({
   labelStyle: {
-    marginRight: 16,
+    marginHorizontal: 16,
     fontFamily: 'Poppins_600SemiBold',
     fontWeight: 600,
   },
