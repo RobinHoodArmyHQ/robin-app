@@ -3,6 +3,7 @@ import { Colors } from 'react-native-ui-lib';
 
 export const styles = StyleSheet.create({
   formFieldContainer: {
+    alignSelf: 'stretch',
     flexGrow: 1,
   },
   formField: {
