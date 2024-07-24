@@ -29,7 +29,3 @@ cssInterop(Svg, {
     target: 'style',
   },
 });
-
-// Assets.loadAssetsGroup('icons', {
-//   chevronRight: require('../../assets/icons/right-arrow.svg'),
-// });

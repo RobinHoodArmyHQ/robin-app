@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Carousel, Colors, Image, View } from 'react-native-ui-lib';
 
-import ArrowRight from '@/../assets/icons/right-arrow.svg';
+import RHA from '@/components';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 import { useIsFirstTime } from '@/core/hooks';
 import { Text } from '@/ui';
@@ -121,5 +121,5 @@ const styles = StyleSheet.create({
 });
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} />;
+  return <RHA.Icons.ArrowRight width={8} translateY={1} />;
 }

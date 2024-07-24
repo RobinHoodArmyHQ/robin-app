@@ -15,7 +15,11 @@ export default function CheckinSuccessScreen() {
       message: 'You have successfully checked in to the event.',
     })
       .then((res) => {
-        console.log(res);
+        if (res.success) {
+          router.back();
+        } else {
+          console.log(res);
+        }
       })
       .catch((err) => {
         err && console.log(err);
