@@ -1,28 +1,37 @@
-import { Stack } from 'expo-router';
+/* eslint-disable max-lines-per-function */
+import { Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import {
-  Avatar,
-  Carousel,
-  Colors,
-  Image,
-  Text,
-  View,
-} from 'react-native-ui-lib';
+import { Avatar, Colors, Text, View } from 'react-native-ui-lib';
 
+import { useGetEvent } from '@/api/events/use-get-event-details';
+import RHA from '@/components';
 import { EventDetails } from '@/components/event-details';
 
-const IMAGES = [
-  'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-];
+// const IMAGES = [
+//   'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+// ];
 
 export default function EventDetailsPage() {
-  // const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+
+  if (typeof id !== 'string') {
+    // TODO: handle error
+    return null;
+  }
+
+  const {
+    data: getEventResponse,
+    isLoading: isLoadingGetEvent,
+    // error: errorGetEvent,
+    //    refetch,
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+  } = useGetEvent({ event_id: id });
 
   return (
     <>
@@ -32,7 +41,9 @@ export default function EventDetailsPage() {
         }}
       />
 
-      <Carousel
+      {isLoadingGetEvent && <RHA.UI.Overlay message="Loading" type="loading" />}
+
+      {/* <Carousel
         autoplay
         animated
         containerStyle={styles.carouselContainer}
@@ -57,15 +68,14 @@ export default function EventDetailsPage() {
             </View>
           );
         })}
-      </Carousel>
+      </Carousel> */}
 
       <View paddingH-24 paddingT-24>
         <EventDetails
-          title="This is a very large Event Name that flows into two lines"
-          timings="4:00PM - 9:00PM"
-          description="Enjoy your favorite dishes and a lovely evening with your friends and family and
-          have a great time. Food from local food trucks will be available for
-          purchase"
+          title={getEventResponse?.event.title ?? ''}
+          description={getEventResponse?.event.description ?? ''}
+          eventStartTime={getEventResponse?.event.start_time ?? new Date()}
+          eventLocation={getEventResponse?.event.event_location}
         />
         <View style={styles.subHeading}>
           <Text

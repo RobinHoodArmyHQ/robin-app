@@ -2,7 +2,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, TouchableOpacity } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
 import type { PickerItemProps, TextFieldRef } from 'react-native-ui-lib';
 import {
   Button,
@@ -15,6 +14,7 @@ import {
   Wizard,
 } from 'react-native-ui-lib';
 
+import type { CreateEventRequest, CreateEventResponse } from '@/api/events';
 import { useCreateEvent } from '@/api/events';
 import RHA from '@/components';
 import { EventDetails } from '@/components/event-details';
@@ -23,6 +23,18 @@ const event_type_options: PickerItemProps[] = [
   { value: 'MEAL_DRIVE', label: 'Meal Drive' },
   { value: 'ACADEMY', label: 'Academy' },
 ];
+
+const updateTime = (date?: Date, time?: Date) => {
+  if (date === undefined || time === undefined) {
+    return new Date();
+  }
+
+  const newDate = new Date(date);
+  newDate.setHours(time.getHours());
+  newDate.setMinutes(time.getMinutes());
+
+  return newDate;
+};
 
 export default function Create() {
   const [toast, setToast] = useState<{
@@ -62,11 +74,8 @@ export default function Create() {
     }
   }, [event_location_param]);
 
-  const {
-    mutate: createEvent,
-    isPending: isEventRequestPending,
-    //    error: errorCreateEvent,
-  } = useCreateEvent();
+  const { mutate: createEvent, isPending: isEventRequestPending } =
+    useCreateEvent();
 
   let eventTitleInputRef = useRef<TextFieldRef>(null);
   let eventDescriptionInputRef = useRef<TextFieldRef>(null);
@@ -78,22 +87,17 @@ export default function Create() {
     activeIndex: number;
     completedStepIndex: number;
     lastStepIndex: number;
-    formData: {
-      title: string;
-      description: string;
-      event_type: string;
-      event_location: {
-        latitude: number;
-        longitude: number;
-        name?: string;
-      };
-      eventDate?: Date;
-      eventStartTime?: Date;
-    };
+    eventDate?: Date;
+    eventStartTime?: Date;
+    success: boolean;
+    eventID: string;
+    formData: CreateEventRequest;
   } = {
     activeIndex: 0,
     completedStepIndex: 0,
     lastStepIndex: 2,
+    success: false,
+    eventID: '',
     formData: {
       title: '',
       description: '',
@@ -142,8 +146,7 @@ export default function Create() {
         <EventDetails
           title={state.formData.title}
           description={state.formData.description}
-          eventDate={state.formData.eventDate}
-          eventStartTime={state.formData.eventStartTime}
+          eventStartTime={state.formData.start_time}
           eventLocation={state.formData.event_location}
         />
       </>
@@ -284,11 +287,15 @@ export default function Create() {
           leadingAccessory={
             <RHA.Icons.Calendar fill={Colors.grey_2} width={20} />
           }
-          value={state.formData.eventDate}
+          value={state.eventDate}
           onChange={(date: Date) => {
             setState((prevState) => ({
               ...prevState,
-              formData: { ...prevState.formData, eventDate: date },
+              eventDate: date,
+              formData: {
+                ...prevState.formData,
+                start_time: updateTime(date, state.eventStartTime),
+              },
             }));
           }}
         />
@@ -330,11 +337,15 @@ export default function Create() {
           validateOnChange
           enableErrors
           leadingAccessory={<RHA.Icons.Clock fill={Colors.grey_2} width={20} />}
-          value={state.formData.eventStartTime}
+          value={state.eventStartTime}
           onChange={(date: Date) => {
             setState((prevState) => ({
               ...prevState,
-              formData: { ...prevState.formData, eventStartTime: date },
+              eventStartTime: date,
+              formData: {
+                ...prevState.formData,
+                start_time: updateTime(state.eventDate, date),
+              },
             }));
           }}
         />
@@ -433,17 +444,14 @@ export default function Create() {
     createEvent(
       { ...state.formData },
       {
-        onSuccess: (response: any) => {
-          // TODO
-          showMessage({
-            message: response.status.message,
-            type: 'success',
-          });
+        onSuccess: (response: CreateEventResponse) => {
+          console.log('response: ', response);
+          setState({ ...state, success: true, eventID: response.event_id });
         },
         onError: (err) => {
           setToast({
             visible: true,
-            message: 'Error creating event' + (err?.message || ''),
+            message: 'Error creating event: ' + (err?.message || ''),
             type: 'failure',
           });
         },
@@ -483,6 +491,17 @@ export default function Create() {
           message={'Creating Event...'}
           messageStyle={{ color: Colors.white }}
           loaderColor={Colors.white}
+        />
+      )}
+
+      {state.success && (
+        <RHA.UI.Overlay
+          type="loading"
+          message="Yayy!! your event has been created, share it with the world!"
+          showButton
+          buttonLabel="Continue"
+          onButtonPress={() => router.replace('/event/' + state.eventID)}
+          containerStyle={{ backgroundColor: Colors.rgba(Colors.grey_3, 0.9) }}
         />
       )}
 

@@ -6,6 +6,7 @@ import { PasswordInput } from './form/password-input';
 import { PrimaryButton } from './form/primary-button';
 import { Icons } from './icons';
 import H1 from './typography/h1';
+import { Overlay } from './ui/overlay';
 
 const RHA = {
   Type: {
@@ -20,6 +21,9 @@ const RHA = {
     PrimaryButton,
   },
   Icons: Icons,
+  UI: {
+    Overlay: Overlay,
+  },
 };
 
 export default RHA;

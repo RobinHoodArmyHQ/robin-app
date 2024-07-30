@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import _ from 'lodash';
 import React from 'react';
 import { StyleSheet } from 'react-native';
@@ -7,16 +6,38 @@ import { Colors, Text, TouchableOpacity, View } from 'react-native-ui-lib';
 
 import { Icons } from './icons';
 
+const getDateString = (date: Date | undefined) => {
+  return date instanceof Date
+    ? date.toLocaleDateString([], {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : '';
+};
+
+const getTimeString = (date: Date | undefined) => {
+  return date instanceof Date
+    ? date
+        .toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })
+        .toLocaleUpperCase()
+        .concat(' onwards')
+    : '';
+};
+
 export const EventDetails = ({
   title,
   description,
-  eventDate,
   eventStartTime,
   eventLocation,
 }: {
   title: string;
   description: string;
-  eventDate?: Date;
   eventStartTime?: Date;
   eventLocation?: {
     latitude: number;
@@ -31,6 +52,9 @@ export const EventDetails = ({
     descriptionShortened = description.slice(0, 150).trim() + '...';
   }
 
+  const dateStr = getDateString(eventStartTime);
+  const timeStr = getTimeString(eventStartTime);
+
   return (
     <>
       <Text style={styles.heading}>{title}</Text>
@@ -40,25 +64,8 @@ export const EventDetails = ({
           <Icons.Calendar fill={Colors.rhaGreen} />
         </View>
         <View>
-          <Text style={styles.detailsText}>
-            {/* 14 December, 2021 &nbsp;&middot;&nbsp; TUESDAY */}
-            {eventDate?.toLocaleDateString([], {
-              weekday: 'long',
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            })}
-          </Text>
-          <Text style={styles.detailsSubText}>
-            {eventStartTime
-              ?.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-              })
-              .toLocaleUpperCase()
-              .concat(' onwards')}
-          </Text>
+          <Text style={styles.detailsText}>{dateStr}</Text>
+          <Text style={styles.detailsSubText}>{timeStr}</Text>
         </View>
       </View>
 
