@@ -91,7 +91,7 @@
     "react-native-share": "^10.2.1",
     "react-native-svg": "15.2.0",
     "react-native-svg-transformer": "^1.4.0",
-    "react-native-ui-lib": "^7.26.2",
+    "react-native-ui-lib": "^7.27.0",
     "react-native-web": "~0.19.12",
     "react-query-kit": "^3.3.0",
     "tailwind-variants": "^0.1.20",
