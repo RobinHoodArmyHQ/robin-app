@@ -8,7 +8,6 @@ import {
   Colors,
   DateTimePicker,
   Incubator,
-  LoaderScreen,
   Picker,
   View,
   Wizard,
@@ -17,7 +16,7 @@ import {
 import type { CreateEventRequest, CreateEventResponse } from '@/api/events';
 import { useCreateEvent } from '@/api/events';
 import RHA from '@/components';
-import { EventDetails } from '@/components/event-details';
+import { EventDetails } from '@/components/ui/event-details';
 
 const event_type_options: PickerItemProps[] = [
   { value: 'MEAL_DRIVE', label: 'Meal Drive' },
@@ -74,8 +73,11 @@ export default function Create() {
     }
   }, [event_location_param]);
 
-  const { mutate: createEvent, isPending: isEventRequestPending } =
-    useCreateEvent();
+  const {
+    mutate: createEvent,
+    isPending: isEventRequestPending,
+    reset: resetCreateEvent,
+  } = useCreateEvent();
 
   let eventTitleInputRef = useRef<TextFieldRef>(null);
   let eventDescriptionInputRef = useRef<TextFieldRef>(null);
@@ -440,7 +442,8 @@ export default function Create() {
   };
 
   const onSubmit = () => {
-    // console.log(formData);
+    resetCreateEvent();
+
     createEvent(
       { ...state.formData },
       {
@@ -473,6 +476,7 @@ export default function Create() {
         position={'top'}
         preset={toast.type}
         backgroundColor={Colors.red70}
+        autoDismiss={10000}
         action={{
           label: 'Dismiss',
           onPress: () => {
@@ -485,23 +489,21 @@ export default function Create() {
       />
 
       {isEventRequestPending && (
-        <LoaderScreen
-          overlay
-          backgroundColor={Colors.rgba(Colors.grey_3, 0.9)}
+        <RHA.UI.Overlay
+          type="loading"
           message={'Creating Event...'}
           messageStyle={{ color: Colors.white }}
-          loaderColor={Colors.white}
+          containerStyle={{ backgroundColor: Colors.rgba(Colors.grey_3, 0.9) }}
         />
       )}
 
       {state.success && (
         <RHA.UI.Overlay
-          type="loading"
+          type="success"
           message="Yayy!! your event has been created, share it with the world!"
           showButton
           buttonLabel="Continue"
           onButtonPress={() => router.replace('/event/' + state.eventID)}
-          containerStyle={{ backgroundColor: Colors.rgba(Colors.grey_3, 0.9) }}
         />
       )}
 

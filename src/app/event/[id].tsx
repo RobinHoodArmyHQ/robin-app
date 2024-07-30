@@ -6,7 +6,7 @@ import { Avatar, Colors, Text, View } from 'react-native-ui-lib';
 
 import { useGetEvent } from '@/api/events/use-get-event-details';
 import RHA from '@/components';
-import { EventDetails } from '@/components/event-details';
+import { EventDetails } from '@/components/ui/event-details';
 
 // const IMAGES = [
 //   'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',

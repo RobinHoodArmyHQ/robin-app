@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import openMap from 'react-native-open-maps';
 import { Colors, Text, TouchableOpacity, View } from 'react-native-ui-lib';
 
-import { Icons } from './icons';
+import { Icons } from '../icons';
 
 const getDateString = (date: Date | undefined) => {
   return date instanceof Date

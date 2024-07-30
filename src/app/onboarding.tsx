@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { Button, Carousel, Colors, Image, View } from 'react-native-ui-lib';
 
 import RHA from '@/components';
-import { HeaderWithLogo } from '@/components/header-with-logo';
+import { HeaderWithLogo } from '@/components/ui/header-with-logo';
 import { useIsFirstTime } from '@/core/hooks';
 import { Text } from '@/ui';
 
