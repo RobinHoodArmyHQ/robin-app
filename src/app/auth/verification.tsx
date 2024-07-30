@@ -9,7 +9,7 @@ import {
 } from 'react-native-confirmation-code-field';
 import { Button, Colors, Text, View } from 'react-native-ui-lib';
 
-import ArrowRight from '@/../assets/icons/right-arrow.svg';
+import RHA from '@/components';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 
 export default function VerificationScreen() {
@@ -135,5 +135,5 @@ const styles = StyleSheet.create({
 });
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} />;
+  return <RHA.Icons.ArrowRight width={8} translateY={1} />;
 }

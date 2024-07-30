@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import type { View as ViewType } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Colors, Image, View } from 'react-native-ui-lib';

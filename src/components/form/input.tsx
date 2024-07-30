@@ -22,6 +22,9 @@ type PropTypes = {
   numberOfLines?: number;
   floatingPlaceHolder?: boolean;
   editable?: boolean;
+  showClearButton?: boolean;
+  onClear?: () => void;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 };
 
 export const Input = React.forwardRef<
@@ -42,11 +45,15 @@ export const Input = React.forwardRef<
       numberOfLines,
       floatingPlaceHolder = true,
       editable,
+      showClearButton,
+      onClear,
+      autoCapitalize,
     }: PropTypes,
     ref
   ) => {
     return (
       <TextField
+        color={{ disabled: Colors.rhaBlack }}
         ref={ref}
         style={styles.formInput}
         containerStyle={styles.formFieldContainer}
@@ -62,13 +69,15 @@ export const Input = React.forwardRef<
         validationMessage={validationMessage}
         validateOnBlur
         validateOnChange={validateOnChange}
-        autoCapitalize="words"
+        autoCapitalize={autoCapitalize}
         leadingAccessory={leadingAccessory}
         onChangeValidity={onChangeValidity}
         onChangeText={onChangeText}
         multiline={multiline}
         numberOfLines={numberOfLines}
         editable={editable}
+        showClearButton={showClearButton}
+        onClear={onClear}
       />
     );
   }

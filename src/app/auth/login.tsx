@@ -5,7 +5,6 @@ import { Button, Colors, Text, View } from 'react-native-ui-lib';
 
 import FacebookLogo from '@/../assets/icons/facebook_logo.svg';
 import GoogleLogo from '@/../assets/icons/google_logo.svg';
-import ArrowRight from '@/../assets/icons/right-arrow.svg';
 import RHA from '@/components';
 import { HeaderWithLogo } from '@/components/header-with-logo';
 import { useAuth } from '@/core';
@@ -102,7 +101,7 @@ export default function LoginScreen() {
 }
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} fill={Colors.white} />;
+  return <RHA.Icons.ArrowRight width={8} translateY={1} fill={Colors.white} />;
 }
 
 function GoogleLogoIcon() {

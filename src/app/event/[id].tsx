@@ -1,29 +1,37 @@
 /* eslint-disable max-lines-per-function */
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import {
-  Assets,
-  Avatar,
-  Carousel,
-  Colors,
-  Icon,
-  Image,
-  Text,
-  View,
-} from 'react-native-ui-lib';
+import { Avatar, Colors, Text, View } from 'react-native-ui-lib';
 
-const IMAGES = [
-  'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-];
+import { useGetEvent } from '@/api/events/use-get-event-details';
+import RHA from '@/components';
+import { EventDetails } from '@/components/event-details';
+
+// const IMAGES = [
+//   'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529146/pexels-photo-2529146.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+//   'https://images.pexels.com/photos/2529158/pexels-photo-2529158.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+// ];
 
 export default function EventDetailsPage() {
-  // const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+
+  if (typeof id !== 'string') {
+    // TODO: handle error
+    return null;
+  }
+
+  const {
+    data: getEventResponse,
+    isLoading: isLoadingGetEvent,
+    // error: errorGetEvent,
+    //    refetch,
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+  } = useGetEvent({ event_id: id });
 
   return (
     <>
@@ -33,7 +41,9 @@ export default function EventDetailsPage() {
         }}
       />
 
-      <Carousel
+      {isLoadingGetEvent && <RHA.UI.Overlay message="Loading" type="loading" />}
+
+      {/* <Carousel
         autoplay
         animated
         containerStyle={styles.carouselContainer}
@@ -58,59 +68,15 @@ export default function EventDetailsPage() {
             </View>
           );
         })}
-      </Carousel>
+      </Carousel> */}
 
       <View paddingH-24 paddingT-24>
-        <Text style={styles.heading}>
-          This is a very large Event Name that flows into two lines
-        </Text>
-
-        <View style={styles.subHeading}>
-          <Text
-            style={{
-              fontFamily: 'ptsans',
-              fontSize: 14,
-              color: '#165F30',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}
-          >
-            Details
-          </Text>
-        </View>
-
-        <View marginT-16 row>
-          <Icon size={24} tintColor="#443E3E" source={Assets.icons.search} />
-          <View paddingL-8>
-            <Text marginB-4 style={styles.detailsText}>
-              14 December, 2021
-            </Text>
-            <Text style={styles.detailsSubText}>Tuesday, 4:00PM - 9:00PM</Text>
-          </View>
-        </View>
-
-        <View marginT-16 row>
-          <Icon size={24} tintColor="#443E3E" source={Assets.icons.search} />
-          <View paddingL-8>
-            <Text
-              marginB-4
-              style={styles.detailsText}
-              highlightString={'Pick up:'}
-              highlightStyle={styles.detailsTextHighlight}
-            >
-              Pick up: Chula chauki da dhaba, Jaynagar
-            </Text>
-            <Text
-              marginB-4
-              style={styles.detailsText}
-              highlightString={'Distribution:'}
-              highlightStyle={styles.detailsTextHighlight}
-            >
-              Distribution: East end cluster
-            </Text>
-          </View>
-        </View>
-
+        <EventDetails
+          title={getEventResponse?.event.title ?? ''}
+          description={getEventResponse?.event.description ?? ''}
+          eventStartTime={getEventResponse?.event.start_time ?? new Date()}
+          eventLocation={getEventResponse?.event.event_location}
+        />
         <View style={styles.subHeading}>
           <Text
             style={{
@@ -162,8 +128,9 @@ export default function EventDetailsPage() {
 
 const styles = StyleSheet.create({
   detailsText: {
-    fontSize: 16,
-    color: '#120D26',
+    // fontSize: 16,
+    color: Colors.rhaBlack,
+    fontFamily: 'Poppins_600SemiBold',
   },
   detailsSubText: {
     fontFamily: 'ptsans',
@@ -172,19 +139,20 @@ const styles = StyleSheet.create({
   },
   detailsTextHighlight: {
     color: '#434246',
-    fontFamily: 'poppinsSemiBold',
+    fontFamily: 'Poppins_600SemiBold',
   },
   subHeading: {
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: Colors.grey_1,
     borderBottomWidth: 1,
-    paddingVertical: 8,
-    marginTop: 24,
+    paddingVertical: 4,
+    marginTop: 36,
+    marginBottom: 8,
   },
   heading: {
-    fontFamily: 'poppinsSemiBold',
-    fontSize: 26,
-    lineHeight: 38,
-    color: '#1A202C',
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 24,
+    lineHeight: 40,
+    color: Colors.rhaBlack,
   },
   carouselContainer: {
     height: 210,
@@ -196,5 +164,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#120D26',
     paddingLeft: 16,
+  },
+  iconContainer: {
+    backgroundColor: Colors.rgba(Colors.rhaGreen, 0.2),
+    borderRadius: 5,
+    height: 46,
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  detailsRowContainer: {
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  descriptionText: {
+    lineHeight: 24,
   },
 });

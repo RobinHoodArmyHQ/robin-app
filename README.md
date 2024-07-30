@@ -53,3 +53,9 @@ pnpm android
 This project follows [this guide](https://medium.com/@HassanYousefi/how-to-use-svg-with-dynamic-colors-in-react-native-171a94e8a8e2) to dynamically modify SVG Icon colors
 
 Icons can be passed props mentioned in `.svgrrc` file.
+
+### Assets
+
+#### Icons
+
+- https://www.figma.com/community/file/1114001199549197320/untitled-ui-icons-1-100-essential-figma-icons

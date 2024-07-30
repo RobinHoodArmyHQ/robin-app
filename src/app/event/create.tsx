@@ -1,36 +1,103 @@
 /* eslint-disable max-lines-per-function */
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
-import type { TextFieldRef } from 'react-native-ui-lib';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, ScrollView, TouchableOpacity } from 'react-native';
+import type { PickerItemProps, TextFieldRef } from 'react-native-ui-lib';
 import {
   Button,
   Colors,
   DateTimePicker,
+  Incubator,
+  LoaderScreen,
   Picker,
-  Text,
   View,
   Wizard,
 } from 'react-native-ui-lib';
 
+import type { CreateEventRequest, CreateEventResponse } from '@/api/events';
+import { useCreateEvent } from '@/api/events';
 import RHA from '@/components';
-import type { Option } from '@/ui';
-import { ArrowRight } from '@/ui/icons';
+import { EventDetails } from '@/components/event-details';
+
+const event_type_options: PickerItemProps[] = [
+  { value: 'MEAL_DRIVE', label: 'Meal Drive' },
+  { value: 'ACADEMY', label: 'Academy' },
+];
+
+const updateTime = (date?: Date, time?: Date) => {
+  if (date === undefined || time === undefined) {
+    return new Date();
+  }
+
+  const newDate = new Date(date);
+  newDate.setHours(time.getHours());
+  newDate.setMinutes(time.getMinutes());
+
+  return newDate;
+};
 
 export default function Create() {
-  // const { mutate: createEvent, isPending } = useCreateEvent();
-  const { event_location } = useLocalSearchParams();
-  const event_type_options: Option[] = [
-    { value: 'MEAL_DRIVE', label: 'Meal Drive' },
-    { value: 'ACADEMY', label: 'Academy' },
-  ];
+  const [toast, setToast] = useState<{
+    visible: boolean;
+    message: string;
+    type: Incubator.ToastPresets | 'success' | 'failure';
+  }>({
+    visible: false,
+    message: '',
+    type: 'failure',
+  });
 
-  let eventTitleInputRef = React.createRef<TextFieldRef>();
+  // update location data in state when received as URL param (e.g. passed by location-picker)
+  const { event_location_param } = useLocalSearchParams();
+  useEffect(() => {
+    if (typeof event_location_param === 'string') {
+      const location = JSON.parse(event_location_param);
+      if (location === null) {
+        console.log(
+          'WARN: Ignoring invalid location data received in param: ' +
+            event_location_param
+        );
+        return;
+      }
 
-  const initialState = {
+      setState((prevState) => ({
+        ...prevState,
+        formData: {
+          ...prevState.formData,
+          event_location: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            name: location.name,
+          },
+        },
+      }));
+    }
+  }, [event_location_param]);
+
+  const { mutate: createEvent, isPending: isEventRequestPending } =
+    useCreateEvent();
+
+  let eventTitleInputRef = useRef<TextFieldRef>(null);
+  let eventDescriptionInputRef = useRef<TextFieldRef>(null);
+  let eventDateInputRef = useRef<TextFieldRef>(null);
+  let eventStartTimeInputRef = useRef<TextFieldRef>(null);
+  let eventLocationInputRef = useRef<TextFieldRef>(null);
+
+  const initialState: {
+    activeIndex: number;
+    completedStepIndex: number;
+    lastStepIndex: number;
+    eventDate?: Date;
+    eventStartTime?: Date;
+    success: boolean;
+    eventID: string;
+    formData: CreateEventRequest;
+  } = {
     activeIndex: 0,
     completedStepIndex: 0,
     lastStepIndex: 2,
+    success: false,
+    eventID: '',
     formData: {
       title: '',
       description: '',
@@ -41,6 +108,7 @@ export default function Create() {
       },
     },
   };
+
   const [state, setState] = useState(initialState);
 
   const onActiveIndexChanged = (activeIndex: number) => {
@@ -68,8 +136,21 @@ export default function Create() {
       case 1:
         return renderMoreDetailsForm();
       case 2:
-        return <Text>TODO</Text>;
+        return renderPreview();
     }
+  };
+
+  const renderPreview = () => {
+    return (
+      <>
+        <EventDetails
+          title={state.formData.title}
+          description={state.formData.description}
+          eventStartTime={state.formData.start_time}
+          eventLocation={state.formData.event_location}
+        />
+      </>
+    );
   };
 
   const renderBasicDetailsForm = () => {
@@ -91,7 +172,7 @@ export default function Create() {
           items={event_type_options}
           useDialog
           style={{ fontSize: 14, paddingLeft: 8 }}
-          trailingAccessory={<RHA.Icons.DownArrow fill={Colors.grey_2} />}
+          trailingAccessory={<RHA.Icons.ArrowDown stroke={Colors.grey_2} />}
           leadingAccessory={
             <RHA.Icons.EventType fill={Colors.grey_2} height={18} />
           }
@@ -134,7 +215,8 @@ export default function Create() {
         />
 
         <RHA.Form.Input
-          placeholder="Event Details"
+          placeholder="Event Description"
+          ref={eventDescriptionInputRef}
           leadingAccessory={
             <RHA.Icons.EventName
               fill={Colors.grey_2}
@@ -144,43 +226,40 @@ export default function Create() {
           }
           multiline
           numberOfLines={8}
-        />
-
-        {/* <Input
-          label="Title"
-          onChangeText={(text) =>
-            setState({ ...state, formData: { ...state.formData, title: text } })
-          }
-        />
-
-        <Input
-          label="Description"
-          multiline
-          onChangeText={(text) =>
+          autoCapitalize="sentences"
+          value={state.formData.description}
+          validate={['required', (text: string) => text.length > 100]}
+          validationMessage={[
+            'Event Description is required',
+            'Description is too short',
+          ]}
+          onChangeText={(text) => {
             setState({
               ...state,
               formData: { ...state.formData, description: text },
-            })
-          }
+            });
+          }}
         />
-
-        
-        <Button
-          className="mt-10"
-          label="Create Event"
-          loading={isPending}
-          onPress={onSubmit}
-        /> */}
       </>
     );
   };
 
   const renderMoreDetailsForm = () => {
+    let eventLocationInputValue = state.formData.event_location.name;
+    if (
+      !eventLocationInputValue &&
+      (state.formData.event_location.latitude !== 0 ||
+        state.formData.event_location.longitude !== 0)
+    ) {
+      eventLocationInputValue = `${state.formData.event_location.latitude}, ${state.formData.event_location.longitude}`;
+    }
+
     return (
       <>
         <DateTimePicker
           placeholder={'Date of Event'}
-          minimumDate={new Date(2024, 0, 1)}
+          ref={eventDateInputRef}
+          minimumDate={new Date()}
           floatingPlaceholder
           floatingPlaceholderStyle={{
             paddingLeft: 8,
@@ -202,12 +281,27 @@ export default function Create() {
           }}
           mode={'date'}
           enableErrors
+          validate={['required']}
+          validationMessage={['Date is required']}
+          validateOnChange
           leadingAccessory={
             <RHA.Icons.Calendar fill={Colors.grey_2} width={20} />
           }
+          value={state.eventDate}
+          onChange={(date: Date) => {
+            setState((prevState) => ({
+              ...prevState,
+              eventDate: date,
+              formData: {
+                ...prevState.formData,
+                start_time: updateTime(date, state.eventStartTime),
+              },
+            }));
+          }}
         />
         <DateTimePicker
           placeholder={'Start Time'}
+          ref={eventStartTimeInputRef}
           is24Hour={false}
           dateTimeFormatter={(date) =>
             date
@@ -239,84 +333,131 @@ export default function Create() {
           }}
           mode={'time'}
           validate={['required']}
-          validationMessage={''}
+          validationMessage={['Time is required']}
           validateOnChange
           enableErrors
           leadingAccessory={<RHA.Icons.Clock fill={Colors.grey_2} width={20} />}
+          value={state.eventStartTime}
+          onChange={(date: Date) => {
+            setState((prevState) => ({
+              ...prevState,
+              eventStartTime: date,
+              formData: {
+                ...prevState.formData,
+                start_time: updateTime(state.eventDate, date),
+              },
+            }));
+          }}
         />
 
         <TouchableOpacity onPress={() => router.navigate('/location-picker')}>
           <RHA.Form.Input
             placeholder="Event Location"
+            ref={eventLocationInputRef}
             value={
-              state.formData.event_location.latitude !== 0 ||
-              state.formData.event_location.longitude !== 0
-                ? `${state.formData.event_location.latitude}, ${state.formData.event_location.longitude}`
+              state.formData.event_location.name
+                ? state.formData.event_location.name
+                : state.formData.event_location.latitude !== 0 ||
+                  state.formData.event_location.longitude !== 0
+                ? `${state.formData.event_location.latitude.toPrecision(
+                    8
+                  )}, ${state.formData.event_location.longitude.toPrecision(8)}`
                 : ''
             }
             leadingAccessory={
               <RHA.Icons.LocationPin fill={Colors.grey_2} width={20} />
             }
             validate={['required']}
-            validationMessage={''}
+            validationMessage={['Location is required']}
             validateOnChange
             editable={false}
             multiline={true}
+            showClearButton
+            onClear={() => {
+              setState((prevState) => ({
+                ...prevState,
+                formData: {
+                  ...prevState.formData,
+                  event_location: { latitude: 0, longitude: 0 },
+                },
+              }));
+            }}
           />
         </TouchableOpacity>
       </>
     );
   };
 
-  // const initialData: CreateEventRequest = {
-  //   title: '',
-  //   description: '',
-  //   event_type: event_type_options[0].value.toString(),
-  //   event_location: null,
-  // };
-  // const [formData, setFormData] = useState(initialData);
-
-  // update location field in formData whenever location changes
-  useEffect(() => {
-    if (event_location) {
-      const [latitude, longitude] = event_location
-        .toString()
-        .split(',')
-        .map(Number);
-      if (latitude && longitude) {
-        setState((prevState) => ({
-          ...prevState,
-          formData: {
-            ...prevState.formData,
-            event_location: {
-              latitude,
-              longitude,
-            },
-          },
-        }));
-      }
+  const onNext = () => {
+    const isTitleValid = eventTitleInputRef.current?.validate?.();
+    const isDescriptionValid = eventDescriptionInputRef.current?.validate();
+    const isDateValid = eventDateInputRef.current?.validate();
+    const isStartTimeValid = eventStartTimeInputRef.current?.validate();
+    const isLocationValid = eventLocationInputRef.current?.validate();
+    if (
+      isTitleValid === false ||
+      isDescriptionValid === false ||
+      isDateValid === false ||
+      isStartTimeValid === false ||
+      isLocationValid === false
+    ) {
+      console.log(
+        'validation failed: ',
+        isTitleValid,
+        isDescriptionValid,
+        isDateValid,
+        isStartTimeValid,
+        isLocationValid
+      );
+      return;
     }
-  }, [event_location]);
+    setState({
+      ...state,
+      activeIndex:
+        state.activeIndex < state.lastStepIndex
+          ? state.activeIndex + 1
+          : state.lastStepIndex,
+      completedStepIndex:
+        state.completedStepIndex < state.lastStepIndex
+          ? state.completedStepIndex + 1
+          : state.lastStepIndex,
+    });
 
-  // const onSubmit = () => {
-  //   // console.log(formData);
-  //   createEvent(
-  //     { ...state.formData },
-  //     {
-  //       onSuccess: (response: any) => {
-  //         showMessage({
-  //           message: response.status.message,
-  //           type: 'success',
-  //         });
-  //         // here you can navigate to the post list and refresh the list data
-  //         //queryClient.invalidateQueries(usePosts.getKey());
-  //       },
-  //       onError: () => {
-  //         showErrorMessage('Error creating event');
-  //       },
-  //     }
-  //   );
-  // };
+    if (state.activeIndex === state.lastStepIndex) {
+      Alert.alert(
+        'Confirmation',
+        'Event details cannot be modified after creation.\n\nAre you sure you want to create this Event?',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'Yes', onPress: onSubmit },
+        ]
+      );
+    }
+  };
+
+  const onSubmit = () => {
+    // console.log(formData);
+    createEvent(
+      { ...state.formData },
+      {
+        onSuccess: (response: CreateEventResponse) => {
+          console.log('response: ', response);
+          setState({ ...state, success: true, eventID: response.event_id });
+        },
+        onError: (err) => {
+          setToast({
+            visible: true,
+            message: 'Error creating event: ' + (err?.message || ''),
+            type: 'failure',
+          });
+        },
+      }
+    );
+  };
 
   return (
     <>
@@ -326,9 +467,46 @@ export default function Create() {
         }}
       />
 
-      <View className="flex-1  ">
+      <Incubator.Toast
+        visible={toast.visible}
+        message={toast.message}
+        position={'top'}
+        preset={toast.type}
+        backgroundColor={Colors.red70}
+        action={{
+          label: 'Dismiss',
+          onPress: () => {
+            setToast({ ...toast, visible: false });
+          },
+        }}
+        onDismiss={() => {
+          setToast({ ...toast, visible: false });
+        }}
+      />
+
+      {isEventRequestPending && (
+        <LoaderScreen
+          overlay
+          backgroundColor={Colors.rgba(Colors.grey_3, 0.9)}
+          message={'Creating Event...'}
+          messageStyle={{ color: Colors.white }}
+          loaderColor={Colors.white}
+        />
+      )}
+
+      {state.success && (
+        <RHA.UI.Overlay
+          type="loading"
+          message="Yayy!! your event has been created, share it with the world!"
+          showButton
+          buttonLabel="Continue"
+          onButtonPress={() => router.replace('/event/' + state.eventID)}
+          containerStyle={{ backgroundColor: Colors.rgba(Colors.grey_3, 0.9) }}
+        />
+      )}
+
+      <View flex>
         <Wizard
-          testID={'uilib.wizard'}
           activeIndex={state.activeIndex}
           onActiveIndexChanged={onActiveIndexChanged}
           containerStyle={{
@@ -338,7 +516,7 @@ export default function Create() {
             height: 60,
           }}
           activeConfig={{
-            state: 'enabled',
+            state: 'disabled',
             circleColor: Colors.rhaGreen,
             labelStyle: { color: Colors.rhaGreen },
             indexLabelStyle: { color: Colors.rhaGreen },
@@ -349,73 +527,52 @@ export default function Create() {
           <Wizard.Step state={getStepState(2)} label={'Preview'} />
         </Wizard>
 
-        <ScrollView style={{ marginTop: 36, paddingHorizontal: 24 }}>
+        <ScrollView style={{ marginTop: 36, paddingHorizontal: 20 }}>
           {renderCurrentStep()}
         </ScrollView>
 
-        <View row style={{}}>
-          <Button
-            margin-24
-            label="Previous"
-            iconOnRight
-            iconSource={ArrowRightIcon}
-            iconStyle={{}}
-            labelStyle={{
-              marginRight: 16,
-              fontFamily: 'poppinsSemiBold',
-              fontWeight: 'bold',
-            }}
-            backgroundColor={Colors.grey_2}
-            // size={Button.sizes.large}
-            borderRadius={8}
-            marginT-24
-            style={{ height: 56, alignSelf: 'stretch', flexGrow: 1 }}
-            onPress={() => {
-              setState({
-                ...state,
-                activeIndex: state.activeIndex > 0 ? state.activeIndex - 1 : 0,
-                completedStepIndex:
-                  state.completedStepIndex > 0
-                    ? state.completedStepIndex - 1
-                    : 0,
-              });
-            }}
-          />
-
-          <Button
-            margin-24
-            label="Next"
-            iconOnRight
-            iconSource={ArrowRightIcon}
-            iconStyle={{}}
-            labelStyle={{
-              marginRight: 16,
-              fontFamily: 'poppinsSemiBold',
-              fontWeight: 'bold',
-            }}
-            backgroundColor={Colors.rhaGreen}
-            // size={Button.sizes.large}
-            borderRadius={8}
-            style={{ height: 56, alignSelf: 'stretch', flexGrow: 1 }}
-            onPress={() => {
-              const isValid = eventTitleInputRef.current?.validate?.();
-              console.log(isValid);
-
-              setState({
-                ...state,
-                activeIndex:
-                  state.activeIndex < state.lastStepIndex
-                    ? state.activeIndex + 1
-                    : state.lastStepIndex,
-                completedStepIndex:
-                  state.completedStepIndex < state.lastStepIndex
-                    ? state.completedStepIndex + 1
-                    : state.lastStepIndex,
-              });
-            }}
-          />
-
-          {/* <RHA.Form.PrimaryButton label="Next" /> */}
+        <View
+          row
+          style={{
+            justifyContent: 'space-between',
+            margin: 20,
+          }}
+        >
+          <View style={{ flex: 1, marginRight: 10 }}>
+            <Button
+              label="Previous"
+              iconSource={ArrowLeftIcon}
+              labelStyle={{
+                marginHorizontal: 16,
+                fontFamily: 'Poppins_600SemiBold',
+              }}
+              backgroundColor={Colors.grey_2}
+              borderRadius={8}
+              style={{ height: 56 }}
+              disabled={state.activeIndex === 0}
+              onPress={() => {
+                setState({
+                  ...state,
+                  activeIndex:
+                    state.activeIndex > 0 ? state.activeIndex - 1 : 0,
+                  completedStepIndex:
+                    state.completedStepIndex > 0
+                      ? state.completedStepIndex - 1
+                      : 0,
+                });
+              }}
+            />
+          </View>
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <RHA.Form.Button
+              label={
+                state.activeIndex < state.lastStepIndex ? 'Next' : 'Publish'
+              }
+              iconOnRight
+              iconSource={ArrowRightIcon}
+              onPress={onNext}
+            />
+          </View>
         </View>
       </View>
     </>
@@ -423,5 +580,9 @@ export default function Create() {
 }
 
 function ArrowRightIcon() {
-  return <ArrowRight width={8} translateY={1} />;
+  return <RHA.Icons.ArrowRight height={14} stroke={Colors.white} />;
+}
+
+function ArrowLeftIcon() {
+  return <RHA.Icons.ArrowLeft height={14} stroke={Colors.white} />;
 }
