@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import * as ImagePicker from 'expo-image-picker';
-import { router, Stack } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import {
@@ -12,9 +12,16 @@ import {
   View,
 } from 'react-native-ui-lib';
 
+import { useGetEvent } from '@/api';
 import RHA from '@/components';
+import { getDateString, getTimeString } from '@/core';
 
 export default function CheckinScreen() {
+  const { event_id } = useLocalSearchParams();
+  const { data: getEventResponse, isLoading: isLoadingGetEvent } = useGetEvent({
+    event_id: event_id,
+  });
+
   const [checkinImages, setCheckinImages] = useState<string[]>([]);
 
   const pickImage = async () => {
@@ -70,6 +77,10 @@ export default function CheckinScreen() {
         }}
       />
 
+      {isLoadingGetEvent && (
+        <RHA.UI.Overlay message="fetching event details..." type="loading" />
+      )}
+
       <Incubator.Dialog
         bottom
         visible={isDialogVisible}
@@ -104,17 +115,16 @@ export default function CheckinScreen() {
         </View>
       </Incubator.Dialog>
 
-      <View
-        padding-20
-        style={{ borderBottomWidth: 1, borderBottomColor: Colors.grey_1 }}
-      >
-        <Text style={{ color: Colors.grey_2, fontSize: 14 }} marginB-8>
-          CHECKING IN FOR EVENT
+      <View style={styles.header}>
+        <Text style={styles.heading}>CHECKING IN FOR EVENT</Text>
+        <Text style={styles.eventTitle}>
+          {getEventResponse?.event.title || 'Event Title'}
         </Text>
-        <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 18 }}>
-          Friday Food Drive
+        <Text style={styles.eventSubTitle}>
+          {getDateString(getEventResponse?.event.start_time)}
+          &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+          {getTimeString(getEventResponse?.event.start_time)}
         </Text>
-        <Text style={{}}>Saturday, 4th May, 2024, 2:00 PM Onwards</Text>
       </View>
 
       <ScrollView style={{ padding: 20 }}>
@@ -137,11 +147,7 @@ export default function CheckinScreen() {
             />
           ))}
           <TouchableOpacity style={styles.addImageButton} onPress={showDialog}>
-            <Text
-              style={{ fontSize: 32, color: Colors.grey_2, paddingBottom: 2 }}
-            >
-              +
-            </Text>
+            <RHA.Icons.Plus stroke={Colors.rha_green} height={18} width={18} />
           </TouchableOpacity>
         </ScrollView>
 
@@ -177,9 +183,29 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderWidth: 1,
-    backgroundColor: Colors.grey_1,
-    borderColor: Colors.grey_2,
+    backgroundColor: Colors.rgba(Colors.rha_green, 0.1),
+    borderColor: Colors.rha_green,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  header: {
+    padding: 20,
+    backgroundColor: Colors.rgba(Colors.rha_green, 0.1),
+  },
+  heading: {
+    fontFamily: 'Poppins_400Regular',
+    color: Colors.rha_green,
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  eventTitle: {
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 18,
+    color: Colors.rha_black,
+  },
+  eventSubTitle: {
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 14,
+    color: Colors.rha_grey3,
   },
 });

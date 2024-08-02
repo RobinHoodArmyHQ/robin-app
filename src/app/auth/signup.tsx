@@ -10,7 +10,7 @@ import RHA from '@/components';
 import { EmailInput } from '@/components/form/email-input';
 import { NameInput } from '@/components/form/name-input';
 import { PasswordInput } from '@/components/form/password-input';
-import { HeaderWithLogo } from '@/components/header-with-logo';
+import { HeaderWithLogo } from '@/components/ui/header-with-logo';
 
 export default function SignupScreen() {
   return (

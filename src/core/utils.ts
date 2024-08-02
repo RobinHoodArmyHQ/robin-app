@@ -20,3 +20,27 @@ export const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
 
   return store;
 };
+
+export const getDateString = (date: Date | undefined) => {
+  return date instanceof Date
+    ? date.toLocaleDateString([], {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : '';
+};
+
+export const getTimeString = (date: Date | undefined) => {
+  return date instanceof Date
+    ? date
+        .toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })
+        .toLocaleUpperCase()
+        .concat(' onwards')
+    : '';
+};

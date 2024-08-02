@@ -4,7 +4,7 @@ import { Button, Colors, Text, View } from 'react-native-ui-lib';
 
 import RHA from '@/components';
 import { EmailInput } from '@/components/form/email-input';
-import { HeaderWithLogo } from '@/components/header-with-logo';
+import { HeaderWithLogo } from '@/components/ui/header-with-logo';
 
 export default function ResetPasswordScreen() {
   const [isEmailValid, setIsEmailValid] = useState(false);

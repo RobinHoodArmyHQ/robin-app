@@ -1,10 +1,12 @@
+import { router } from 'expo-router';
 import _ from 'lodash';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import openMap from 'react-native-open-maps';
 import { Colors, Text, TouchableOpacity, View } from 'react-native-ui-lib';
 
-import { Icons } from './icons';
+import { OutlineButton } from '../form';
+import { Icons } from '../icons';
 
 const getDateString = (date: Date | undefined) => {
   return date instanceof Date
@@ -31,11 +33,14 @@ const getTimeString = (date: Date | undefined) => {
 };
 
 export const EventDetails = ({
+  eventId,
   title,
   description,
   eventStartTime,
   eventLocation,
+  preview,
 }: {
+  eventId: string;
   title: string;
   description: string;
   eventStartTime?: Date;
@@ -44,6 +49,7 @@ export const EventDetails = ({
     longitude: number;
     name?: string;
   };
+  preview?: boolean;
 }) => {
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
 
@@ -61,7 +67,7 @@ export const EventDetails = ({
 
       <View row style={styles.detailsRowContainer}>
         <View style={styles.iconContainer}>
-          <Icons.Calendar fill={Colors.rhaGreen} />
+          <Icons.Calendar fill={Colors.rha_green} />
         </View>
         <View>
           <Text style={styles.detailsText}>{dateStr}</Text>
@@ -71,7 +77,7 @@ export const EventDetails = ({
 
       <View row style={styles.detailsRowContainer}>
         <View style={styles.iconContainer}>
-          <Icons.LocationPin fill={Colors.rhaGreen} />
+          <Icons.LocationPin fill={Colors.rha_green} />
         </View>
         <View>
           <Text style={styles.detailsText}>
@@ -98,6 +104,8 @@ export const EventDetails = ({
         </View>
       </View>
 
+      {!preview && renderActionButtons(eventId, eventStartTime)}
+
       <View style={styles.subHeading}>
         <Text style={styles.subHeadingText}>Details</Text>
       </View>
@@ -116,17 +124,105 @@ export const EventDetails = ({
   );
 };
 
+const isPastEvent = (eventStartTime: Date | undefined) => {
+  return eventStartTime instanceof Date && eventStartTime < new Date();
+};
+
+const renderActionButtons = (
+  eventId: string,
+  eventStartTime: Date | undefined
+) => {
+  return (
+    <View
+      style={{
+        marginTop: 40,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      }}
+    >
+      {isPastEvent(eventStartTime) ? (
+        <View
+          style={{
+            flex: 1,
+            flexGrow: 1,
+          }}
+        >
+          <OutlineButton
+            iconSource={Icons.render(Icons.CheckIn, {
+              stroke: Colors.rha_green,
+              height: 16,
+              width: 16,
+            })}
+            label="Check In"
+            onPress={() => {
+              router.navigate({
+                pathname: '/event/checkin',
+                params: {
+                  event_id: eventId,
+                },
+              });
+            }}
+          />
+        </View>
+      ) : (
+        <>
+          <View
+            style={{
+              marginRight: 10,
+              flex: 1,
+              flexGrow: 1,
+            }}
+          >
+            <OutlineButton
+              iconSource={Icons.render(Icons.Plus, {
+                stroke: Colors.rha_green,
+                height: 16,
+                width: 16,
+              })}
+              label="Join Event"
+              onPress={() => {
+                console.log('Join Event');
+              }}
+            />
+          </View>
+          <View
+            style={{
+              marginLeft: 10,
+              flexGrow: 1,
+              flex: 1,
+            }}
+          >
+            <OutlineButton
+              label="Share"
+              iconSource={Icons.render(Icons.Share, {
+                fill: Colors.rha_green,
+                height: 16,
+                width: 16,
+              })}
+              onPress={() => {
+                console.log('Share');
+              }}
+            />
+          </View>
+        </>
+      )}
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   detailsText: {
-    color: Colors.rhaBlack,
+    color: Colors.rha_black,
     fontFamily: 'Poppins_600SemiBold',
+    marginRight: 24,
+    paddingRight: 24,
   },
   detailsSubText: {
-    fontFamily: 'ptsans',
-    color: '#747688',
+    fontFamily: 'Poppins_400Regular',
+    color: Colors.rha_grey3,
   },
   subHeading: {
-    borderBottomColor: Colors.grey_1,
+    borderBottomColor: Colors.rha_grey1,
     borderBottomWidth: 1,
     paddingVertical: 4,
     marginTop: 36,
@@ -134,7 +230,7 @@ const styles = StyleSheet.create({
   },
   subHeadingText: {
     fontFamily: 'PTSans_400Regular',
-    color: Colors.rhaGreen,
+    color: Colors.rha_green,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -142,10 +238,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_600SemiBold',
     fontSize: 24,
     lineHeight: 40,
-    color: Colors.rhaBlack,
+    color: Colors.rha_black,
   },
   iconContainer: {
-    backgroundColor: Colors.rgba(Colors.rhaGreen, 0.2),
+    backgroundColor: Colors.rgba(Colors.rha_green, 0.2),
     borderRadius: 5,
     height: 46,
     aspectRatio: 1,
