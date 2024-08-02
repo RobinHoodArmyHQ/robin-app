@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Animated, ViewStyle } from 'react-native';
+import type { Animated, TextStyle, ViewStyle } from 'react-native';
 import { type ImageStyle, type StyleProp, StyleSheet } from 'react-native';
 import type { ButtonProps } from 'react-native-ui-lib';
 import { Button as RNUIButton, Colors } from 'react-native-ui-lib';
@@ -7,7 +7,7 @@ import type { ImageSourceType } from 'react-native-ui-lib/src/components/image';
 
 type ButtonType = 'primary' | 'secondary';
 
-type PropTypes = {
+export type ButtonPropTypes = {
   label?: string;
   type?: ButtonType;
   onPress?: ((props?: any) => void) & ((props: any) => void);
@@ -17,6 +17,7 @@ type PropTypes = {
     | ImageSourceType
     | ((iconStyle?: StyleProp<ImageStyle>[] | undefined) => JSX.Element);
   style?: StyleProp<ViewStyle | Animated.AnimatedProps<ViewStyle>>;
+  labelStyle?: StyleProp<TextStyle>;
   props?: ButtonProps;
 };
 
@@ -28,8 +29,9 @@ export const Button = ({
   iconStyle,
   iconOnRight,
   style,
+  labelStyle,
   ...props
-}: PropTypes) => {
+}: ButtonPropTypes) => {
   return (
     <RNUIButton
       {...props}
@@ -37,7 +39,7 @@ export const Button = ({
       iconOnRight={iconOnRight}
       iconSource={iconSource}
       iconStyle={iconStyle}
-      labelStyle={styles.labelStyle}
+      labelStyle={[styles.labelStyle, labelStyle]}
       backgroundColor={type === 'primary' ? Colors.rhaGreen : Colors.grey_1}
       borderRadius={8}
       style={[styles.buttonStyle, style]}

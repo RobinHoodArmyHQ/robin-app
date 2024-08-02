@@ -2,10 +2,10 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
-import MapView from 'react-native-maps';
 import type { PickerItemProps, PickerMethods } from 'react-native-ui-lib';
 import {
   Avatar,
+  Carousel,
   Colors,
   Picker,
   Text,
@@ -13,7 +13,8 @@ import {
   View,
 } from 'react-native-ui-lib';
 
-import type { City } from '@/api/location/cities';
+import type { City, Event } from '@/api';
+import { useGetUpcomingEvents } from '@/api';
 import RHA from '@/components';
 import { getItem, setItem } from '@/core/storage';
 
@@ -44,6 +45,21 @@ export default function Feed() {
   } else if (selectedCity.city_id !== state.selectedCity?.city_id) {
     setState({ ...state, selectedCity });
   }
+
+  const {
+    data: getUpcomingEventsResponse,
+    // isLoading: isLoadingGetUpcomingEvents,
+    // error: errorGetEvent,
+    //    refetch,
+  } = useGetUpcomingEvents({
+    city_id: selectedCity.city_id,
+    offset: 0,
+    limit: 5,
+    user_location: {
+      latitude: 0,
+      longitude: 0,
+    },
+  });
 
   // const { data, isPending, isError } = usePosts();
   // const renderItem = React.useCallback(
@@ -139,106 +155,42 @@ export default function Feed() {
           Welcome Robin!
         </RHA.Type.H1>
 
-        <TouchableOpacity
-          activeOpacity={0.9}
-          throttleTime={250}
-          activeScale={0.98}
-          activeBackgroundColor={Colors.grey1}
-          style={{ paddingHorizontal: 20 }}
+        <Text
+          style={{
+            marginVertical: 20,
+            marginHorizontal: 20,
+            fontSize: 16,
+            color: Colors.grey_2,
+            textTransform: 'uppercase',
+          }}
         >
-          <View
-            style={{
-              borderRadius: 8,
-              overflow: 'hidden',
-              elevation: 10,
-              shadowColor: Colors.grey40,
-              backgroundColor: Colors.white,
-            }}
-          >
-            {/* <Image
-            source={{
-              uri: 'https://images.pexels.com/photos/2529159/pexels-photo-2529159.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=400',
-            }}
-            style={{ height: 100 }}
-          /> */}
-            <MapView
-              cacheEnabled
-              liteMode
-              loadingEnabled
-              scrollEnabled={false}
-              zoomEnabled={false}
-              zoomTapEnabled={false}
-              toolbarEnabled={false}
-              zoomControlEnabled={false}
-              pitchEnabled={false}
-              rotateEnabled={false}
-              style={{ height: 100 }}
-              region={{
-                latitude: 28.3,
-                longitude: 77.4,
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.05,
-              }}
-              onPress={() => {}}
+          Upcomings events in {selectedCity ? selectedCity.name : 'your city'}
+        </Text>
+        <Carousel
+          pageControlProps={{
+            size: 6,
+            containerStyle: { position: 'relative', top: -10 },
+          }}
+          pageControlPosition={Carousel.pageControlPositions.OVER}
+          // showCounter
+          animated
+        >
+          {getUpcomingEventsResponse?.events.map((e: Event, i) => (
+            <RHA.UI.Card
+              key={i}
+              event={e}
+              containerStyle={{ marginHorizontal: 20, marginBottom: 20 }}
             />
-            <View style={{ padding: 10, backgroundColor: Colors.white }}>
-              <Text
-                style={{
-                  marginBottom: 8,
-                  fontSize: 18,
-                  fontFamily: 'Poppins_600SemiBold',
-                }}
-              >
-                Friday Food Drive
-              </Text>
-              <View row marginB-12>
-                <RHA.Icons.Calendar
-                  fill={Colors.grey_2}
-                  width={16}
-                  height={28}
-                />
-                <View marginL-8>
-                  <Text
-                    column
-                    style={{
-                      fontFamily: 'Poppins_600SemiBold',
-                    }}
-                  >
-                    Saturday, 4<Text style={{ fontSize: 10 }}>th</Text> May,
-                    2024
-                  </Text>
-                  <Text>2 PM onwards</Text>
-                </View>
-              </View>
-
-              <View row marginB-12>
-                <RHA.Icons.LocationPin fill={Colors.grey_2} width={16} />
-                <View marginL-8>
-                  <Text column style={{}}>
-                    Behind One Horizon Center, Sector 52, Gurgaon, Haryana
-                  </Text>
-                </View>
-              </View>
-
-              <View row>
-                <Text column style={{}}>
-                  <Text style={{ fontFamily: 'Poppins_600SemiBold' }}>
-                    Neel Ghose
-                  </Text>{' '}
-                  & 12 other Robins are joining
-                </Text>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+          ))}
+        </Carousel>
 
         <Text
           style={{
             marginVertical: 20,
+            marginHorizontal: 20,
             fontSize: 16,
             color: Colors.grey_2,
             textTransform: 'uppercase',
-            textAlign: 'center',
           }}
         >
           Latest activity in {selectedCity ? selectedCity.name : 'your city'}

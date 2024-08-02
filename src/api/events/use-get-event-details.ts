@@ -1,7 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { client } from '../common';
-import type { GetEventRequest, GetEventResponse } from './types';
+import type { Event, Status } from '../types';
+
+export type GetEventRequest = {
+  event_id: string;
+};
+
+export type GetEventResponse = {
+  status: Status;
+  event: Event;
+};
 
 export const useGetEvent = (req: GetEventRequest) => {
   return useQuery({

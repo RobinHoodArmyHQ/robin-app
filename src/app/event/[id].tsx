@@ -72,6 +72,7 @@ export default function EventDetailsPage() {
 
       <View paddingH-24 paddingT-24>
         <EventDetails
+          eventId={id}
           title={getEventResponse?.event.title ?? ''}
           description={getEventResponse?.event.description ?? ''}
           eventStartTime={getEventResponse?.event.start_time ?? new Date()}
@@ -80,9 +81,9 @@ export default function EventDetailsPage() {
         <View style={styles.subHeading}>
           <Text
             style={{
-              fontFamily: 'ptsans',
+              fontFamily: 'PTSans_400Regular',
               fontSize: 14,
-              color: '#165F30',
+              color: Colors.rha_green,
               textTransform: 'uppercase',
               letterSpacing: 1,
             }}

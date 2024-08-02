@@ -146,10 +146,12 @@ export default function Create() {
     return (
       <>
         <EventDetails
+          eventId="preview"
           title={state.formData.title}
           description={state.formData.description}
           eventStartTime={state.formData.start_time}
           eventLocation={state.formData.event_location}
+          preview
         />
       </>
     );

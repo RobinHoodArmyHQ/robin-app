@@ -18,14 +18,6 @@ import '../../global.css';
 
 import React from 'react';
 
-Colors.loadColors({
-  rhaGreen: '#165F30',
-  rhaBlack: '#120D26',
-  grey_1: '#E5E5E5',
-  grey_2: '#9D9898',
-  grey_3: '#443E3E',
-});
-
 export const unstable_settings = {
   initialRouteName: '(app)',
 };

@@ -1,22 +1,30 @@
+import { router } from 'expo-router';
 import React from 'react';
+import type { ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import MapView from 'react-native-maps';
 import { Colors, Text, TouchableOpacity, View } from 'react-native-ui-lib';
 
-import type { Post } from '@/api';
+import type { Event } from '@/api';
+import { getDateString, getTimeString } from '@/core';
 
 import { Icons } from '../icons';
 
-type Props = Post;
+type EventCardProps = {
+  event: Event;
+  containerStyle?: ViewStyle;
+};
 
-export const Card = ({}: Props) => {
+export const Card = ({ event, containerStyle }: EventCardProps) => {
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       throttleTime={250}
       activeScale={0.98}
       activeBackgroundColor={Colors.grey1}
-      style={{
-        marginHorizontal: 20,
+      style={containerStyle}
+      onPress={() => {
+        router.navigate(`/event/${event.event_id}`);
       }}
     >
       <View
@@ -47,23 +55,14 @@ export const Card = ({}: Props) => {
           rotateEnabled={false}
           style={{ height: 100 }}
           region={{
-            latitude: 28.3,
-            longitude: 77.4,
+            latitude: event.event_location.latitude,
+            longitude: event.event_location.longitude,
             latitudeDelta: 0.1,
             longitudeDelta: 0.05,
           }}
-          onPress={() => {}}
         />
-        <View style={{ padding: 10, backgroundColor: Colors.white }}>
-          <Text
-            style={{
-              marginBottom: 8,
-              fontSize: 18,
-              fontFamily: 'Poppins_600SemiBold',
-            }}
-          >
-            Friday Food Drive
-          </Text>
+        <View style={{ padding: 16, backgroundColor: Colors.white }}>
+          <Text style={styles.title}>{event.title}</Text>
           <View row marginB-12>
             <Icons.Calendar fill={Colors.grey_2} width={16} height={28} />
             <View marginL-8>
@@ -73,9 +72,9 @@ export const Card = ({}: Props) => {
                   fontFamily: 'Poppins_600SemiBold',
                 }}
               >
-                Saturday, 4<Text style={{ fontSize: 10 }}>th</Text> May, 2024
+                {getDateString(event.start_time)}
               </Text>
-              <Text>2 PM onwards</Text>
+              <Text>{getTimeString(event.start_time)}</Text>
             </View>
           </View>
 
@@ -101,3 +100,11 @@ export const Card = ({}: Props) => {
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    marginBottom: 8,
+    fontSize: 18,
+    fontFamily: 'Poppins_600SemiBold',
+  },
+});

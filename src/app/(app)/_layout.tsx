@@ -4,9 +4,8 @@ import { Link, Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Colors, Text } from 'react-native-ui-lib';
 
-import type { City } from '@/api/location/cities';
-import { useCities } from '@/api/location/cities';
-// import { useCities } from '@/api/location/cities';
+import type { City } from '@/api';
+import { useGetCities } from '@/api/location/use-get-cities';
 import RHA from '@/components';
 import { useAuth, useIsFirstTime } from '@/core';
 import { getItem, setItem } from '@/core/storage';
@@ -23,7 +22,7 @@ export default function TabLayout() {
     isLoading: isLoadingGetCities,
     error: errorGetCities,
     //    refetch,
-  } = useCities();
+  } = useGetCities();
 
   const [isFirstTime] = useIsFirstTime();
   const hideSplash = useCallback(async () => {
